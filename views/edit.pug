@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  h1#page-title= title
+  div#list
+    form(action="/create" method="post" accept-charset="utf-8")
+      div.item-new
+        input.input(type="text" name="content")
+  
+  each todo in todos
+    if todo._id == current
+      div.item-new
+    else
+      div.item
+        if todo._id == current
+          form.update-form(action="/update/"+todo._id method="post" accept-charset="utf-8")
+            input.update-input(type="text" name="content" value=todo.content)
+        else
+          a.update-link(href="/edit/"+todo._id title="Update this todo item") #{todo.content}
+          
+        if todo._id == current
+          a.del-btn-edit(href="/destroy /"+todo._id title="Delete this todo item") Delete
+        else
+          a.del-btn(href="/destroy /"+todo._id title="Delete this todo item") Delete

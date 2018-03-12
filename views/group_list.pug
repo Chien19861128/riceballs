@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  div.row.marketing
+    - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if groups.length > 0
+      div.col-lg-12
+        h4= "All " + title + " Groups"
+      each group_val, i in groups
+        div.container
+          nav.navbar.navbar-expand-lg.navbar-light.bg-light.rounded
+            span.col-lg-4= group_val.name
+            if typeof group_val.start_time != 'undefined'
+              span.col-lg-4= ' Starting ' + monthNames[group_val.start_time.getMonth()] + ' ' + group_val.start_time.getDate() + ' ' + group_val.start_time.getFullYear() +' @' + group_val.start_time.getHours() + ':00GMT'
+            //span.col-lg-3= ' ' + group_val.attending_users_count + ' members'
+            a.col-lg-4(href='/groups/' + group_val.slug)= 'See Schedule >>'
+          p(style="padding-left: 10px;margin-bottom: 10px;font-size: 6px;")='host(s):' + group_val.admins + '/members:' + group_val.attending_users_count
+    else
+      div.col-lg-12
+        h6= "None yet! Try starting your own!"
+        
+    a.nav-link.active(href="/groups/new") Start a new Group

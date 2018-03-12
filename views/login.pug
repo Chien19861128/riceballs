@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+  .row
+    if user.name
+      a.btn-lg.btn-success(href="/logout", title="", target="_blank") Logout
+    else
+      a.btn-lg.btn-success(href="/auth/reddit", title="", target="") Login with Reddit
+  
+  .row
+    p 
+    
+  footer.footer
+    p 

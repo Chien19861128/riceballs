@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    title="Riceballs - " + title
+    link(rel='stylesheet', href='/stylesheets/slip.css')
+    link(rel='stylesheet', href='/public/bootstrap/css/bootstrap.min.css')
+    script(src="/public/jquery/jquery.min.js")
+    script(src="/public/popper/umd/popper.min.js")
+    script(src="/public/easy-autocomplete/jquery.easy-autocomplete.min.js")
+    link(rel="stylesheet" href="/public/easy-autocomplete/easy-autocomplete.min.css")
+    script(src="/public/bootstrap/js/bootstrap.min.js")
+    script(src="/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js")
+    link(rel='stylesheet', href='/stylesheets/narrow-jumbotron.css')
+    link(rel='stylesheet', href='/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css')
+    link(rel='stylesheet', href='/public/jquery-datetimepicker/jquery.datetimepicker.min.css')
+    script(src="/public/jquery-mousewheel/jquery.mousewheel.js")
+    script(src="/public/jquery-datetimepicker/jquery.datetimepicker.full.min.js")
+    //link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    div.container
+      div.header.clearfix
+        nav
+          ul.nav.nav-pills.float-right
+            if typeof user != 'undefined'
+              li.nav-item
+                a.nav-link.active(href="/user/me") My Groups
+                  span.sr-only= (current)
+              //li.nav-item
+                a.nav-link(href="/user/" + user.name + "/settings") Settings
+              li.nav-item
+                a.nav-link(href="/logout") Logout
+            else
+              li.nav-item
+                a.nav-link(href="/login") Login
+        h3.text-muted
+          a.text-muted(href="/") Riceballs
+      
+      block content
+    //  div.layout-footer
+    //div#footer-wrap
+    //  div#footer
+    //    div.footer-content
+    //    div.footer-content &#169;
+    //script(src="/javascripts/ga.js")

@@ -1,0 +1,92 @@
+extends layout
+
+block content
+
+  script(src="/slip/slip.js")
+  div.col-lg-4.float-right
+    label.text-secondary(for="cover")= series_name
+    img(id="cover" name="cover" src="/images/cover/" + series_slug + ".jpg" alt="")
+    p.text-secondary @ #{discussion_time} GMT 
+  div.col-lg-8
+    p.text-info Drag and drop episodes to reorder. 
+  div.col-lg-8
+    form(id="schedule_form" name="schedule_form" action='/groups/create_schedule' method='POST')
+      ol.slippylist(id="schedule_list" name="schedule_list")
+        - var d = start_date;
+        - var e = 1;
+        - var c = 0;
+        - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        while e <= episode_count || d <= end_date
+          if d <= end_date && c == 0
+            li.text-light.bg-dark.demo-no-swipe.demo-no-reorder #{monthNames[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear()}
+            - d.setDate(d.getDate()+1);   
+          if e <= episode_count
+            li.demo-no-swipe Episode #{e}
+            - e++;
+            - c++;
+          if c == eps_per_day || e == (episode_count + 1)
+            - c = 0;
+      input(type="hidden" id="final_list" name="final_list" value="")
+      input(type="hidden" id="discussion_time" name="discussion_time" value=discussion_time)
+  
+      button.btn.btn-primary(id="confirm" type="button") Done!
+      
+  .row
+    p 
+    
+  footer.footer
+    p 
+    
+  script.
+    function setupSlip(list) {
+      list.addEventListener('slip:beforereorder', function(e){
+        if (e.target.classList.contains('demo-no-reorder')) {
+          e.preventDefault();
+        }
+      }, false);
+
+      list.addEventListener('slip:beforeswipe', function(e){
+        if (e.target.nodeName == 'INPUT' || e.target.classList.contains('demo-no-swipe')) {
+          e.preventDefault();
+        }
+      }, false);
+
+      list.addEventListener('slip:beforewait', function(e){
+        if (e.target.classList.contains('instant')) e.preventDefault();
+      }, false);
+
+      list.addEventListener('slip:afterswipe', function(e){
+        e.target.parentNode.appendChild(e.target);
+      }, false);
+
+      list.addEventListener('slip:reorder', function(e){
+        e.target.parentNode.insertBefore(e.target, e.detail.insertBefore);
+        return false;
+      }, false);
+      return new Slip(list);
+    }
+    setupSlip(document.getElementById('schedule_list'));
+    
+    function confirm() {
+      var schedule_form = document.getElementById('schedule_form');
+
+      var ul = schedule_form.getElementsByTagName('ul');
+      ul = ul && ul[0];
+      console.log(ul);
+
+      var lis = schedule_form.getElementsByTagName('li');
+      var final_list = new Array();
+      
+      for (var i = 0; i < lis.length; i++) {
+        final_list[i] = lis[i].innerText;
+        console.log("[" + i + "]" + lis[i].innerText);
+      }
+      
+      console.log("[final_list]" + final_list);
+        
+      document.getElementById('final_list').value = final_list;
+      
+      document.schedule_form.submit();
+    }
+
+    document.getElementById("confirm").addEventListener('click', confirm, false);

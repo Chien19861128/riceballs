@@ -1,0 +1,29 @@
+extends layout
+
+block content
+    
+  div.row.marketing
+    div.col-lg-12
+      p.text-success= "This color means you are host."
+    div.col-lg-12
+      h5 Schedule
+      if schedule && schedule.length > 0
+        table.table
+          thead.thead-dark
+            tr
+              td="Date"
+              td="Episode(s)"
+              td=""
+          tbody
+          - var current_time;
+            each row, i in schedule
+              tr
+                td=row[0]
+                if typeof user.admin_groups != 'undefined' && user.admin_groups.indexOf(row[2]) > -1
+                  td.text-success=row[1]
+                else
+                  td=row[1]
+                td
+                  a(href="/groups/" + row[2]) Group Details >>
+  footer.footer
+    p 

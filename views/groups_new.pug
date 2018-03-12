@@ -1,0 +1,136 @@
+extends layout
+
+block content
+
+  script(src="/public/dist/jquery.validate.min.js")
+  script(src="/public/easy-autocomplete/jquery.easy-autocomplete.min.js")
+  script.
+    $(document).ready(function () {
+      
+      var options = {
+        url: function(phrase) {
+          return "/elasticsearch?phrase=" + phrase;
+        },
+        getValue: function(item) {
+          return item._source.title + " (" +item._source.vintage + ")";
+        },
+        template: {
+          type: "custom",
+          method: function(value, item) {
+            return "<img src='/images/cover/" + item._source.slug + ".jpg' height='70' alt=' '/> " + item._source.title + " (" +item._source.vintage + ") [" + item._source.episode_count + " eps][" + item._source.type + "]";
+          }
+        },
+        list: {
+          onSelectItemEvent: function() {
+            var slug = $("#title").getSelectedItemData()._source.slug;
+
+            $("#slug").val(slug).trigger("change");
+            
+            var episode_count = $("#title").getSelectedItemData()._source.episode_count;
+
+            $("#episode_count").val(episode_count).trigger("change");
+          }
+        },
+      };
+      $("#title").easyAutocomplete(options);
+      $(".easy-autocomplete").removeAttr("style");
+      
+      $('#start_date').datetimepicker({
+        dayOfWeekStart : 1,
+        timepicker:false,
+        formatDate:'Y/m/d',
+        format:'Y/m/d',
+        lang:'en',
+        //allowTimes:[
+        //  '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+        //],
+        startDate: new Date(),
+        minDate:0,
+        onShow: function(ct) {
+          this.setOptions({
+            maxDate:jQuery('#end_time').val()?jQuery('#end_time').val():false
+          })
+        }  
+      });
+      
+      $('#end_date').datetimepicker({
+        dayOfWeekStart : 1,
+        timepicker:false,
+        formatDate:'Y/m/d',
+        format:'Y/m/d',
+        lang:'en',
+        //allowTimes:[
+        //  '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+        //],
+        onShow: function(ct) {
+          this.setOptions({
+            startDate: jQuery('#start_time').val()?jQuery('#start_time').val():new Date(),
+            minDate:jQuery('#start_time').val()?jQuery('#start_time').val():0 
+          })
+        }  
+      });
+      
+      $('#discussion_time').datetimepicker({
+        lang:'en',
+        datepicker:false,
+        format:'H:i',
+        step:5,
+        allowTimes:[
+          '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+        ]
+      });
+      
+      $('#interest_due_date').datetimepicker({
+        dayOfWeekStart : 1,
+        lang:'en',
+        allowTimes:[
+          '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+        ],
+        startDate: new Date(),
+        minDate:0,
+        onShow: function(ct) {
+          this.setOptions({
+            maxDate:jQuery('#start_time').val()?jQuery('#start_time').val():false
+          })
+        }  
+      });
+    });
+    
+    $(document).on("focusin", "#start_date, #end_date, #discussion_time", function() {
+      $(this).prop('readonly', true);  
+    });
+
+    $(document).on("focusout", "#start_date, #end_date, #discussion_time", function() {
+      $(this).prop('readonly', false); 
+    });
+    
+    $("#new_group").validate();
+    
+  div.row.marketing
+    div.col-lg-12
+      h5= title
+      form.my-2.my-lg-0(id="new_group" action='/groups/create', method='POST')
+        //div.col-lg-12
+          h5 Series
+        div.col-lg-12
+          label(for="title")= "Series"
+          input.form-control.col-lg-8.mb-sm-2(id="title" name="title" type="text" placeholder="Type and pick Series" aria-label="Series Title" required)
+          input.form-control.mb-sm-2(id="slug" name="slug" type="hidden" required)
+          input.form-control.mb-sm-2(id="episode_count" name="episode_count" type="hidden")
+        div.col-lg-12
+          div.input-append.date
+            label(for="start_date")= "Held Between"
+            input.form-control.col-lg-3.mb-sm-2(type="text" value="" id="start_date" name="start_date" placeholder="Start date" required)
+            input.form-control.col-lg-3.mb-sm-2(type="text" value="" id="end_date" name="end_date" placeholder="End date" required)
+        //div.col-lg-12
+          p &nbsp;
+        //div.col-lg-12
+          h5 Discussion Time &nbsp;
+        div.well.col-lg-12
+          label(for="discussion_time")= "Discussion Time"
+          input.form-control.col-lg-3.mb-sm-2(type="text" value="" id="discussion_time" name="discussion_time" placeholder="Pick GMT time" required)
+        div.col-lg-12
+          button.btn.btn-outline-success.my-2.my-sm-0.mt-sm-2(type="submit") Create Schedule
+    
+  footer.footer
+    p 

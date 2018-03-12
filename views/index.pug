@@ -1,0 +1,45 @@
+extends layout
+
+block content
+
+  div.row.marketing
+    - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if ongoing_groups.length > 0
+      div.col-lg-12
+        h6= "Ongoing Groups"
+      div.container
+        div.row
+          each ongoing_val, i in ongoing_groups
+            div.col-lg-6.col-md-6
+              div.card(style="height : 200px")
+                div.row
+                  div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/cover/" + ongoing_val.series_slugs[0] + ".jpg) center no-repeat;background-size: cover;")
+                  div.col-lg-7.col-md-7.col-sm-9.col-8
+                    div.card-body
+                    h7.card-title= ongoing_val.name
+                  
+                    if typeof ongoing_val.start_time != 'undefined'
+                      p(style="font-size: 8px;").card-text= ' Starting ' + monthNames[ongoing_val.start_time.getMonth()] + ' ' + ongoing_val.start_time.getDate() + ' ' + ongoing_val.start_time.getFullYear() +' @' + ongoing_val.start_time.getHours() + ':00GMT'
+                    a.btn.btn-primary(href='/groups/' + ongoing_val.slug)= 'Schedule'
+              p(style="font-size: 6px;")='host(s):' + ongoing_val.admins + '/members:' + ongoing_val.attending_users_count
+        //div.container
+          nav.navbar.navbar-expand-lg.navbar-light.bg-light.rounded
+            span.col-lg-3= ongoing_val.name
+            if typeof ongoing_val.start_time != 'undefined'
+              span.col-lg-4= ' Starting ' + monthNames[ongoing_val.start_time.getMonth()] + ' ' + ongoing_val.start_time.getDate() + ' ' + ongoing_val.start_time.getFullYear() +' @' + ongoing_val.start_time.getHours() + ':00GMT'
+            //span.col-lg-3= ' ' + ongoing_val.attending_users_count + ' members'
+            a.col-lg-4(href='/groups/' + ongoing_val.slug)= 'See Schedule >>'
+          p(style="padding-left: 10px;margin-bottom: 10px;font-size: 6px;")='host(s):' + ongoing_val.admins + '/members:' + ongoing_val.attending_users_count
+      if ongoing_groups.length == 6
+        div.col-lg-12
+          a.float-right(href="/groups/ongoing") More >> 
+          
+    if upcoming_groups.length > 0
+      div.col-lg-12
+        h6= "Upcoming Group"
+      if upcoming_groups.length == 6
+        div.col-lg-12
+          a.float-right(href="/groups/upcoming") More >> 
+          
+    div.col-lg-12
+      a.nav-link.active(href="/groups/new") Start a new Group
