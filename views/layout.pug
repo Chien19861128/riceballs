@@ -4,6 +4,7 @@ html(lang="en")
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
     title="Riceballs - " + title
+    link(rel='icon' href='/images/favicon.ico')
     link(rel='stylesheet', href='/stylesheets/slip.css')
     link(rel='stylesheet', href='/public/bootstrap/css/bootstrap.min.css')
     script(src="/public/jquery/jquery.min.js")
@@ -17,6 +18,8 @@ html(lang="en")
     link(rel='stylesheet', href='/public/jquery-datetimepicker/jquery.datetimepicker.min.css')
     script(src="/public/jquery-mousewheel/jquery.mousewheel.js")
     script(src="/public/jquery-datetimepicker/jquery.datetimepicker.full.min.js")
+    //script(src="/javascripts/webpush.js")
+    link(rel='stylesheet', href='/stylesheets/toggle-switch.css')
     //link(rel='stylesheet', href='/stylesheets/style.css')
   body
     div.container
@@ -36,11 +39,25 @@ html(lang="en")
                 a.nav-link(href="/login") Login
         h3.text-muted
           a.text-muted(href="/") Riceballs
+            //img(border="0" alt="Riceballs" src="/images/favicon.ico" width="32" height="32")
       
       block content
-    //  div.layout-footer
-    //div#footer-wrap
-    //  div#footer
-    //    div.footer-content
-    //    div.footer-content &#169;
-    //script(src="/javascripts/ga.js")
+      
+    script(src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js")
+    script.
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCPwXDuqKHQNBBfSCRxLVZgB51Kb1L3780",
+        authDomain: "api-project-86698823.firebaseapp.com",
+        databaseURL: "https://api-project-86698823.firebaseio.com",
+        projectId: "api-project-86698823",
+        storageBucket: "",
+        messagingSenderId: "554272978685"
+      };
+      firebase.initializeApp(config);
+      
+      firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+        alert("[idToken]" + idToken);
+      }).catch(function(error) {
+        // Handle error
+      });

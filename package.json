@@ -13,9 +13,12 @@
     "express": "~4.15.2",
     "jquery": "^3.2.1",
     "morgan": "~1.8.1",
+    "node-cron": "^1.2.1",
+    "node-gcm": "^0.14.10",
     "popper.js": "^1.12.5",
     "pug": "~2.0.0-beta11",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "web-push": "^3.3.0"
   },
   "description": "Groch",
   "main": "app.js",

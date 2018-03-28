@@ -12,7 +12,8 @@ var User = new Schema({
     create_time  : Date,
     update_time  : Date,
     admin_groups : [],
-    joined_groups: []
+    joined_groups: [],
+    push_subscription: String,
 });
 
 User.plugin(findOrCreate);

@@ -18,6 +18,12 @@ block content
       else
         form(action='/groups/join/' + group.slug method='POST')
           button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Join
+      if typeof user != 'undefined' 
+        div.enable-push
+          div.toggle-switch
+            input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+            label(for="enable-push-checkbox")
+          div.message="Notifications(N/Y)"
     div.col-lg-4
       img(src="/images/cover/" + series.slug + ".jpg" alt="")
     div.col-lg-12
@@ -36,6 +42,7 @@ block content
                   td=col
   footer.footer
     p 
+  script(src="/javascripts/webpush.js")
   script.
     document.getElementById("current_url").value = window.location.href;
   

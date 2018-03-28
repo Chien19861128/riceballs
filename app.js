@@ -16,6 +16,7 @@ var mongoose       = require('mongoose');
 var findOrCreate   = require('mongoose-find-or-create');
 var passport       = require('passport');
 var RedditStrategy = require('passport-reddit').Strategy;
+var cron = require('node-cron');
 
 var User    = require('./models/User');
 var Todo    = require('./models/Todo');
@@ -58,6 +59,7 @@ var routes        = require('./routes');
 var elasticsearch = require('./routes/elasticsearch.js');
 var groups        = require('./routes/groups.js');
 var user          = require('./routes/user.js');
+var push       = require('./routes/push.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -68,6 +70,7 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(methodOverride());
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -112,6 +115,9 @@ app.post('/groups/leave/:slug',     groups.leave);
 app.get('/groups/ongoing',          groups.ongoing);
 app.get('/groups/upcoming',         groups.upcoming);
 app.get('/user/me',                 user.me);
+app.get('/push',                 push.index);
+app.get('/push/signup',          push.signup);
+app.post('/push/save_subscription', push.save_subscription);
 
 app.get('/auth/reddit', function(req, res, next){
   req.session.state = crypto.randomBytes(32).toString('hex');
@@ -169,4 +175,128 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+
 module.exports = app;
+
+const webpush = require('web-push');
+
+webpush.setGCMAPIKey(config.webpush.GCMAPIKey);
+webpush.setVapidDetails(
+  config.webpush.mailto,
+  config.webpush.publicKey,
+  config.webpush.privateKey
+);
+
+cron.schedule('55 * * * *', function(){
+  console.log('cronjob 1 day reminder');
+    
+  var d1 = new Date();
+  var d2 = new Date();
+    
+  d1.setDate(d1.getDate() + 1);
+  d2.setDate(d2.getDate() + 1);
+  d2.setHours(d2.getHours() + 1);
+    
+  var query_group = Group.find({start_time : {$gt: d1, $lt: d2}});
+  var promise_group = query_group.exec();
+
+  promise_group.then(function (group_val) {
+    for (i=0; i<group_val.length; i++) {
+      var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      
+      var payload = {
+        body: monthNames[group_val[i].start_time.getMonth()] + ' ' + group_val[i].start_time.getDate() + ' ' + group_val[i].start_time.getHours() + ':00 GMT',
+        title: group_val[i].name + ' in 1 day!',
+        tag: '1_day_start_notice'
+      };    
+        
+      var all_users = group_val[i].admins.concat(group_val[i].attending_users);
+        
+      var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
+      var promise_user = query_user.exec(); 
+        
+      promise_user.then(function (user_val) {
+        for (i=0; i<user_val.length; i++) {
+          var ps = JSON.parse(user_val[i].push_subscription);
+            
+          var pushSubscription = {
+            endpoint: ps.endpoint,
+            keys: {
+              auth: ps.keys.auth,
+              p256dh: ps.keys.p256dh
+            }
+          };
+            
+          webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
+            if (err.statusCode === 410) {
+              console.log('Push fail: ', err);
+              //return deleteSubscriptionFromDatabase(subscription._id);
+            } else {
+              console.log('Subscription is no longer valid: ', err);
+            }
+          });
+        }
+      });
+    }
+  });
+});
+
+cron.schedule('50 * * * *', function(){
+  console.log('cronjob episode reminder');
+    
+  var d1 = new Date();
+  var d2 = new Date();
+    
+  d2.setHours(d2.getHours() + 1);
+  var query_group_schedule = Group_Schedule.find({discussion_time : {$gt: d1, $lt: d2}});
+  var promise_group_schedule = query_group_schedule.exec();
+
+  promise_group_schedule.then(function (group_schedule_val) {
+    for (i=0; i<group_schedule_val.length; i++) {
+        
+      var episode_number = group_schedule_val[i].episode_number;
+      var discussion_hour = group_schedule_val[i].discussion_time.getHours();
+        
+      var query_group = Group.findOne({slug : group_schedule_val[i].group_slug});
+      var promise_group = query_group.exec();
+
+      promise_group.then(function (group_val) {
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      
+        var payload = {
+          body: 'Episode ' + episode_number + ' starting at ' + discussion_hour + ':00 GMT',
+          title: group_val.name,
+          tag: 'episode_notice'
+        };    
+        
+        var all_users = group_val.admins.concat(group_val.attending_users);
+        
+        var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
+        var promise_user = query_user.exec(); 
+        
+        promise_user.then(function (user_val) {
+          for (i=0; i<user_val.length; i++) {
+            var ps = JSON.parse(user_val[i].push_subscription);
+            
+            var pushSubscription = {
+              endpoint: ps.endpoint,
+              keys: {
+                auth: ps.keys.auth,
+                p256dh: ps.keys.p256dh
+              }
+            };
+            
+            webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
+              if (err.statusCode === 410) {
+                console.log('Push fail: ', err);
+                //return deleteSubscriptionFromDatabase(subscription._id);
+              } else {
+                console.log('Subscription is no longer valid: ', err);
+              }
+            });
+          }
+        });
+      });
+    }
+  });
+});

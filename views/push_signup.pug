@@ -1,0 +1,13 @@
+extends layout
+
+block content
+
+  div.row.marketing
+    
+    div.enable-push
+      div.toggle-switch
+        input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+        label(for="enable-push-checkbox")
+      div.message="Enable Notifications"
+      
+  script(src="/javascripts/webpush.js")

@@ -27,7 +27,6 @@ function initialize(url) {
             }
         })
     })
-
 }
 
 exports.index = function ( req, res, next ){
