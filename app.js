@@ -80,6 +80,7 @@ app.use('/public/popper', express.static(__dirname + '/node_modules/popper.js/di
 app.use('/public/easy-autocomplete', express.static(__dirname + '/node_modules/easy-autocomplete/dist/'));
 app.use('/public/jquery-datetimepicker', express.static(__dirname + '/node_modules/jquery-datetimepicker/build/'));
 app.use('/public/jquery-mousewheel', express.static(__dirname + '/node_modules/jquery-mousewheel/'));
+app.use('/public/jquery-validation', express.static(__dirname + '/node_modules/jquery-validation/'));
 app.use('/public/php-date-formatter', express.static(__dirname + '/node_modules/php-date-formatter/js/'));
 
 app.use(session({
