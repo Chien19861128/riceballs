@@ -22,11 +22,9 @@ exports.index = function ( req, res, next ){
     
   webpush.setGCMAPIKey('AIzaSyCPwXDuqKHQNBBfSCRxLVZgB51Kb1L3780');
   webpush.setVapidDetails(
-    'mailto:chien19861128@gmail.com',
-    //vapidKeys.publicKey,
-    //vapidKeys.privateKey
-    'BIBjePfp_KD20kphPJXGgQ-XO2OlJ1IP2RT_64SighWtxfZFjM0CLP4sjYqZpgeGPmfIGDgGH2MpHDWudtD1HE0',
-    'tBGPPqPx565rLDnybmbxVkxd7dpr4KmmVwm2rWiwBjU'
+    config.webpush.mailto,
+    config.webpush.publicKey,
+    config.webpush.privateKey
   );
 
   // This is the same output of calling JSON.stringify on a PushSubscription

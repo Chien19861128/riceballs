@@ -131,7 +131,8 @@ function subscribeUserToPush() {
     const subscribeOptions = {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
-        'BIBjePfp_KD20kphPJXGgQ-XO2OlJ1IP2RT_64SighWtxfZFjM0CLP4sjYqZpgeGPmfIGDgGH2MpHDWudtD1HE0'
+        //'BIBjePfp_KD20kphPJXGgQ-XO2OlJ1IP2RT_64SighWtxfZFjM0CLP4sjYqZpgeGPmfIGDgGH2MpHDWudtD1HE0'
+        'BFIWrRzLOb4upqzggWFAspF_IiCvrEGbtyYafFikVCFPK1bXarERdlace2mT_a6sSij7Cwv-BAIL5EBvvkhOqN4'
       )
     };
 
