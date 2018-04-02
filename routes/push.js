@@ -93,7 +93,7 @@ exports.save_subscription = function ( req, res, next ){
     return;
   }
 
-  return saveSubscriptionToDatabase(req.body)
+  return saveSubscriptionToDatabase(req.body, req.user.name)
   .then(function(subscriptionId) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ data: { success: true } }));
@@ -110,10 +110,10 @@ exports.save_subscription = function ( req, res, next ){
   });
 };
 
-function saveSubscriptionToDatabase(subscription) {
+function saveSubscriptionToDatabase(subscription, username) {
   return new Promise(function(resolve, reject) {
     User.findOneAndUpdate (
-        {name : req.user.name}, 
+        {name : username}, 
         {$set: { push_subscription: JSON.stringify(subscription), update_time : Date.now()}}, 
         {new: true}, 
     function (err, updated_user) {
