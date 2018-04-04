@@ -20,7 +20,7 @@ exports.index = function ( req, res, next ){
 
   //console.log('[vapidKeys]' + vapidKeys);    
     
-  webpush.setGCMAPIKey('AIzaSyCPwXDuqKHQNBBfSCRxLVZgB51Kb1L3780');
+  webpush.setGCMAPIKey(config.webpush.GCMAPIKey);
   webpush.setVapidDetails(
     config.webpush.mailto,
     config.webpush.publicKey,
@@ -28,13 +28,6 @@ exports.index = function ( req, res, next ){
   );
 
   // This is the same output of calling JSON.stringify on a PushSubscription
-  const pushSubscription = {
-    endpoint: 'https://fcm.googleapis.com/fcm/send/fOKF3xP6zmI:APA91bH3axQle3b1CdX8xlfhDRJhn0xYK9KW6PJI_7IGD3gOJpH2_5TJ3E0EgDANblQRZ_tK72wMBFOG7GlYoKugn5O2-jvKkyrOLCAdszZTS2JkPlDla0jT3VM_2tgZ6-Oirv5dgm66',
-    keys: {
-      auth: 'VoJYgz_Ogrd3bDbXxnm8kw==',
-      p256dh: 'BBFWUlsB1Z1XzkScbELWN91HcTmhH9WoRGXtWNNuiqNu3MaYNDaarVedF6AHsnFWwtHBqeOB8zuqMSTFaxfXxVA='
-    }
-  };
 
   var payload = {
           body: Date.now(),
@@ -42,7 +35,7 @@ exports.index = function ( req, res, next ){
           tag: 'tag'
         };   
     
-  var query_user = User.find({push_subscription : {$ne: null}, name : "Dystopian_Overlord"});
+  var query_user = User.find({push_subscription : {$ne: null}, name : req.user.name});
   var promise_user = query_user.exec(); 
         
   promise_user.then(function (user_val) {

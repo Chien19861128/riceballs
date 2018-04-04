@@ -43,8 +43,12 @@ html(lang="en")
       
       block content
       
+    if typeof user != 'undefined'
+      script.
+        var username="#{user.name}";
     script(src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js")
     script.
+    
       // Initialize Firebase
       var config = {
         apiKey: "AIzaSyCPwXDuqKHQNBBfSCRxLVZgB51Kb1L3780",

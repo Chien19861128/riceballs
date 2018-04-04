@@ -104,6 +104,7 @@ function unsubscribeUserFromPush() {
 function sendSubscriptionToBackEnd(subscription) {
   return fetch('/push/save_subscription/', {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
