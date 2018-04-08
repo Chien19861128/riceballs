@@ -208,7 +208,7 @@ cron.schedule('55 * * * *', function(){
       var payload = {
         body: monthNames[group_val[i].start_time.getUTCMonth()] + ' ' + group_val[i].start_time.getUTCDate() + ' ' + group_val[i].start_time.getUTCHours() + ':00 GMT',
         title: group_val[i].name + ' in 1 day!',
-        tag: '1_day_start_notice'
+        tag: '1_day_start_notice' + Date.now()
       };    
         
       var all_users = group_val[i].admins.concat(group_val[i].attending_users);
@@ -267,7 +267,7 @@ cron.schedule('50 * * * *', function(){
         var payload = {
           body: 'EP ' + episode_number + ' discussion starting at ' + discussion_hour + ':00 GMT',
           title: group_val.name,
-          tag: 'episode_notice'
+          tag: 'episode_notice' + Date.now()
         };    
         
         var all_users = group_val.admins.concat(group_val.attending_users);
