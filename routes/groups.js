@@ -73,6 +73,7 @@ exports.create = function ( req, res, next ){
         discussion_time: req.body.discussion_time,
         episode_count: episode_count,
         eps_per_day: eps_per_day,
+        user       : req.user
       });
     });
     //res.redirect( '/' );
@@ -106,7 +107,9 @@ exports.create_schedule = function ( req, res, next ){
         if( err ) return next( err );
       });
     } else {
-      schedule_time = Date.parse(list_split[i] + " " + discussion_time);
+      schedule_time = Date.parse(list_split[i] + " " + discussion_time + " GMT");
+        console.log("[list_split[i]]" + list_split[i] + "[discussion_time]" + discussion_time);
+        console.log("[schedule_time]" + schedule_time);
       day_cnt++;
     }
   }
@@ -138,12 +141,12 @@ exports.detail = function( req, res, next ){
       for (i=0; i<group_schedule.length; i++) {
         var val = group_schedule[i];
           
-        var schedule_date = monthNames[val.discussion_time.getMonth()] + ' ' + val.discussion_time.getDate() + ' ' + val.discussion_time.getFullYear();
+        var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear();
           
         if (typeof current_date == "undefined") {
           current_episodes = val.episode_number;
             
-          discussion_hour = val.discussion_time.getHours();
+          discussion_hour = val.discussion_time.getUTCHours();
           current_date = schedule_date;
         } else if (current_date != schedule_date) {
           current_schedule[date_cnt] = [current_date, current_episodes];

@@ -28,12 +28,12 @@ html(lang="en")
           ul.nav.nav-pills.float-right
             if typeof user != 'undefined'
               li.nav-item
-                a.nav-link.active(href="/user/me") My Groups
+                a.nav-link.active(href="/user/me") MyGroups
                   span.sr-only= (current)
               //li.nav-item
                 a.nav-link(href="/user/" + user.name + "/settings") Settings
               li.nav-item
-                a.nav-link(href="/logout") Logout
+                a.nav-link.pl-2.pr-1(href="/logout") Logout
             else
               li.nav-item
                 a.nav-link(href="/login") Login
@@ -42,6 +42,8 @@ html(lang="en")
             //img(border="0" alt="Riceballs" src="/images/favicon.ico" width="32" height="32")
       
       block content
+      
+      button.btn.btn-sm.float-right(onclick="topFunction()" id="myBtn" title="Go to top") Top
       
     if typeof user != 'undefined'
       script.
@@ -65,3 +67,9 @@ html(lang="en")
       }).catch(function(error) {
         // Handle error
       });
+
+      // When the user clicks on the button, scroll to the top of the document
+      function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+      }

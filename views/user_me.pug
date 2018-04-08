@@ -4,9 +4,19 @@ block content
     
   div.row.marketing
     div.col-lg-12
-      p.text-success= "This color means you are host."
-    div.col-lg-12
-      h5 Schedule
+      if typeof user != 'undefined' 
+        div.row
+          div.col-lg-6
+            h5 Schedule
+          div.col-lg-6.enable-push
+            div.toggle-switch
+              input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+              label(for="enable-push-checkbox")
+            div.message="Notifications(N/Y)"
+      else
+        h5 Schedule
+      p.text-success= "This color means you are the host."
+      a.active(href="/groups/new") Start a new Group >>
       if schedule && schedule.length > 0
         table.table
           thead.thead-dark
@@ -27,3 +37,4 @@ block content
                   a(href="/groups/" + row[2]) Group Details >>
   footer.footer
     p 
+  script(src="/javascripts/webpush.js")

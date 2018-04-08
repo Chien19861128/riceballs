@@ -4,26 +4,31 @@ block content
     
   div.row.marketing
     div.col-lg-8
-      h4= group.name
-      a.float-right(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
-      p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
-      p= "Discussion Time " + discussion_hour + ":00 GMT"
+      div.row
+        div.col-lg-12
+          h4= group.name
+          a.float-right(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
+          p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
+          p= "Discussion Time " + discussion_hour + ":00 GMT"
+        if typeof user != 'undefined' && group.attending_users.indexOf(user.name) > -1
+          div.col-lg-6
+            form(action='/groups/leave/' + group.slug method='POST')
+              button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Leave
+        else
+          div.col-lg-6.col-3
+            form(action='/groups/join/' + group.slug method='POST')
+              button.btn.btn-success.my-2.my-sm-0(type="submit") Join
+        if typeof user != 'undefined' 
+          div.col-lg-6.col-9.enable-push
+            div.toggle-switch
+              input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+              label(for="enable-push-checkbox")
+            div.message="Notifications(N/Y)"
       
-      if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
-        button.float-right.btn.btn-outline-info.my-2.my-sm-0.col-lg-4(onclick="clipboard()") Clipboard link
-        input.form-control.col-lg-8.mb-sm-2(type="text" value="" id="current_url")
-      if typeof user != 'undefined' && group.attending_users.indexOf(user.name) > -1
-        form(action='/groups/leave/' + group.slug method='POST')
-          button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Leave
-      else
-        form(action='/groups/join/' + group.slug method='POST')
-          button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Join
-      if typeof user != 'undefined' 
-        div.enable-push
-          div.toggle-switch
-            input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
-            label(for="enable-push-checkbox")
-          div.message="Notifications(N/Y)"
+        if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+          div.col-lg-12.mt-sm-2
+            button.float-right.btn.btn-outline-info.my-2.my-sm-0.col-lg-4(onclick="clipboard()") Clipboard link
+            input.form-control.col-lg-8.mb-sm-2(type="text" value="" id="current_url")
     div.col-lg-4
       img(src="/images/cover/" + series.slug + ".jpg" alt="")
     div.col-lg-12

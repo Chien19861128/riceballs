@@ -149,7 +149,7 @@ app.get('/login', function(req, res, next) {
 
     res.render('login', { 
         title: 'Login',
-        user: (typeof req.user != 'undefined')?req.user:false
+        //user: (typeof req.user != 'undefined')?req.user:false
     });
 });
 
@@ -206,7 +206,7 @@ cron.schedule('55 * * * *', function(){
       var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
       
       var payload = {
-        body: monthNames[group_val[i].start_time.getMonth()] + ' ' + group_val[i].start_time.getDate() + ' ' + group_val[i].start_time.getHours() + ':00 GMT',
+        body: monthNames[group_val[i].start_time.getUTCMonth()] + ' ' + group_val[i].start_time.getUTCDate() + ' ' + group_val[i].start_time.getUTCHours() + ':00 GMT',
         title: group_val[i].name + ' in 1 day!',
         tag: '1_day_start_notice'
       };    
@@ -256,7 +256,7 @@ cron.schedule('50 * * * *', function(){
     for (i=0; i<group_schedule_val.length; i++) {
         
       var episode_number = group_schedule_val[i].episode_number;
-      var discussion_hour = group_schedule_val[i].discussion_time.getHours();
+      var discussion_hour = group_schedule_val[i].discussion_time.getUTCHours();
         
       var query_group = Group.findOne({slug : group_schedule_val[i].group_slug});
       var promise_group = query_group.exec();
@@ -265,7 +265,7 @@ cron.schedule('50 * * * *', function(){
         var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
       
         var payload = {
-          body: 'Episode ' + episode_number + ' starting at ' + discussion_hour + ':00 GMT',
+          body: 'EP ' + episode_number + ' discussion starting at ' + discussion_hour + ':00 GMT',
           title: group_val.name,
           tag: 'episode_notice'
         };    

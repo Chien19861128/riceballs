@@ -37,8 +37,6 @@ exports.me = function( req, res, next ){
       }
     } 
       
-    console.log('[series_slugs]' + series_slugs);
-      
     Series.find({slug: {$in: series_slugs}}).
     exec( function ( err, series ){
       if( err ) return next( err );
@@ -48,35 +46,46 @@ exports.me = function( req, res, next ){
       for (i=0; i<series.length; i++) {
         series_names[series[i].slug] = series[i].title;
       }
-      console.log('[series_names]' + series_names);
         
       var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
       var current_date;
       var current_series;
       var current_episodes = "";
+      var current_group = "";
       var date_cnt = 0;
       var current_schedule = new Array();
         
       for (i=0; i<schedule.length; i++) {
         var val = schedule[i];
           
-        var schedule_date = monthNames[val.discussion_time.getMonth()] + ' ' + val.discussion_time.getDate() + ' ' + val.discussion_time.getFullYear() + ' ' + val.discussion_time.getHours() + 'GMT';
+        var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear() + ' ' + val.discussion_time.getUTCHours() + 'GMT';
+          
+        if (i==0) {
+          var time_diff = val.discussion_time.getTime() - Date.now();
+          var day_diff = parseInt((time_diff)/(24*3600*1000));
+          var hour_diff = parseInt(((time_diff)%(24*3600*1000))/(3600*1000));
+          var time_diff_str = "(in " + day_diff + "d" + hour_diff + "h)";
+        }
           
         if (typeof current_date == "undefined") {
-          current_episodes = series_names[val.series_slug] + ' ' + val.episode_number;
+          current_episodes = series_names[val.series_slug] + ' EP ' + val.episode_number;
           current_date = schedule_date;
           current_series = val.series_slug;
+          current_group = val.group_slug;
         } else if (current_date != schedule_date || current_series != val.series_slug) {
-          current_schedule[date_cnt] = [current_date, current_episodes, val.group_slug];
+          if (date_cnt==0) current_date = current_date + time_diff_str;
+          current_schedule[date_cnt] = [current_date, current_episodes, current_group];
           date_cnt++;
                 
           current_date = schedule_date;
           current_episodes = series_names[val.series_slug] + ' ' + val.episode_number;
           current_series = val.series_slug;
+          current_group = val.group_slug;
         } else if (i == (schedule.length - 1)) {
           current_episodes = current_episodes + ", " + val.episode_number;
         
-          current_schedule[date_cnt] = [current_date, current_episodes, val.group_slug];
+          if (date_cnt==0) current_date = current_date + time_diff_str;
+          current_schedule[date_cnt] = [current_date, current_episodes, current_group];
         } else {
           current_episodes = current_episodes + ", " + val.episode_number;
         }
