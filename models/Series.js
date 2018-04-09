@@ -8,6 +8,8 @@ var Series = new Schema({
     title        : String, 
     title2       : String, 
     title3       : String, 
+    title4       : String, 
+    title5       : String, 
     type         : String, 
     description  : String, 
     episode_count: Number, 

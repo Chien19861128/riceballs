@@ -62,7 +62,7 @@
   // all calls should be initiated through the module
   const test = function test() {
     Series.find({}).
-    select('-_id slug title title2 title3 type description episode_count length vintage official_tags ann_id').
+    select('-_id slug title title2 title3 title4 title5 type description episode_count vintage official_tags ann_id').
     exec( function ( err, series ){
       if( err ) return next( err );
         

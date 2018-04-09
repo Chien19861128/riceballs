@@ -14,12 +14,11 @@ exports.index = function ( req, res, next ){
       size: 20,
       from: 0,
       query: {
-        match: {
-          title: {
-            query: req.query.phrase,
-            minimum_should_match: 2,
-            fuzziness: 2
-          }
+        multi_match: {
+          fields: ["title", "title2", "title3", "title4", "title5"],
+          query: req.query.phrase,
+          minimum_should_match: 2,
+          fuzziness: "AUTO"
         }
       }
     };

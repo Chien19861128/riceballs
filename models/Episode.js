@@ -4,6 +4,7 @@ var Schema   = mongoose.Schema;
 
 var Episode = new Schema({
     series_slug : String,
+    ann_id      : Number,
     number      : Number,
     title       : String,
     create_time : Date,
