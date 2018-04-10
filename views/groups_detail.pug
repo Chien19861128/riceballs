@@ -9,6 +9,8 @@ block content
           h4= group.name
           a.float-right(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
           p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
+          if group.attending_users_count < 5 && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+            p(style="font-size: 8px;")= "Need at least 3 members to receive notifications and show in front page."
           if group.is_active == false
             p(style="font-size: 8px;")= "status: Gouging interest."
           else

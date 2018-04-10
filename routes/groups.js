@@ -338,7 +338,7 @@ exports.upcoming = function ( req, res, next ){
   var query_upcoming_groups = Group.
     find({
         //is_active: true,
-        attending_users_count: { $gte: 5 },
+        attending_users_count: { $gte: 3 },
         start_time: { $lt: Date.now() }
     }).
     sort( '-attending_users_count -update_time' );

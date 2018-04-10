@@ -203,7 +203,7 @@ cron.schedule('55 * * * *', function(){
   var query_group = Group.find({
       start_time : {$gt: d1, $lt: d2},
       is_active: true,
-      attending_users_count: { $gte: 5 }
+      attending_users_count: { $gte: 3 }
   });
   var promise_group = query_group.exec();
 
@@ -267,7 +267,7 @@ cron.schedule('30 * * * *', function(){
       var query_group = Group.findOne({
           slug : group_schedule_val[i].group_slug,
           is_active: true,
-          attending_users_count: { $gte: 5 }
+          attending_users_count: { $gte: 3 }
       });
       var promise_group = query_group.exec();
 
