@@ -129,55 +129,64 @@ exports.detail = function( req, res, next ){
   var promise_group_schedule = query_group_schedule.exec();
 
   promise_group.then(function (group) {
-    promise_group_schedule.then(function (group_schedule) {  
+      
+    if (group) {
+      
+      promise_group_schedule.then(function (group_schedule) {  
+       
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var discussion_hour;
+        var current_date;
+        var current_episodes = "";
+        var date_cnt = 0;
+        var current_schedule = new Array();
         
-      var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      var discussion_hour;
-      var current_date;
-      var current_episodes = "";
-      var date_cnt = 0;
-      var current_schedule = new Array();
-        
-      for (i=0; i<group_schedule.length; i++) {
-        var val = group_schedule[i];
+        for (i=0; i<group_schedule.length; i++) {
+          var val = group_schedule[i];
           
-        var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear();
+          var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear();
           
-        if (typeof current_date == "undefined") {
-          current_episodes = val.episode_number;
+          if (typeof current_date == "undefined") {
+            current_episodes = val.episode_number;
             
-          discussion_hour = val.discussion_time.getUTCHours();
-          current_date = schedule_date;
-        } else if (current_date != schedule_date) {
-          current_schedule[date_cnt] = [current_date, current_episodes];
-          date_cnt++;
+            discussion_hour = val.discussion_time.getUTCHours();
+            current_date = schedule_date;
+          } else if (current_date != schedule_date) {
+            current_schedule[date_cnt] = [current_date, current_episodes];
+            date_cnt++;
                 
-          current_date = schedule_date;
-          current_episodes = val.episode_number;
-        } else if (i == (group_schedule.length - 1)) {
-          current_episodes = current_episodes + ", " + val.episode_number;
+            current_date = schedule_date;
+            current_episodes = val.episode_number;
+          } else if (i == (group_schedule.length - 1)) {
+            current_episodes = current_episodes + ", " + val.episode_number;
         
-          current_schedule[date_cnt] = [current_date, current_episodes];
-        } else {
-          current_episodes = current_episodes + ", " + val.episode_number;
+            current_schedule[date_cnt] = [current_date, current_episodes];
+          } else {
+            current_episodes = current_episodes + ", " + val.episode_number;
+          }
         }
-      }
         
-      var query_series = Series.findOne({slug : group_schedule[0].series_slug});
-      var promise_series = query_series.exec();
+        var query_series = Series.findOne({slug : group_schedule[0].series_slug});
+        var promise_series = query_series.exec();
         
-      promise_series.then(function (series) {
-        res.render( 'groups_detail', {
-          title          : group.name,
-          series         : series,
-          group          : group,
-          group_schedule : current_schedule,
-          discussion_hour: discussion_hour,
-          current        : req.params.slug,
-          user           : req.user
+        promise_series.then(function (series) {
+          res.render( 'groups_detail', {
+            title          : group.name,
+            series         : series,
+            group          : group,
+            group_schedule : current_schedule,
+            discussion_hour: discussion_hour,
+            current        : req.params.slug,
+            user           : req.user
+          });
         });
       });
-    });
+    } else {
+      res.render( 'groups_not_found', {
+        title          : 'Cancelled',
+        user           : req.user
+      });
+    }
   });
 };
 
