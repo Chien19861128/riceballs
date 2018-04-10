@@ -15,29 +15,30 @@ block content
             p(style="font-size: 8px;")= "status: It's happening!"
           p= "Discussion Time " + discussion_hour + ":00 GMT"
         if typeof user != 'undefined' && group.is_active == false && group.admins.indexOf(user.name) > -1
-          div.col-lg-6.col-3
+          div.col-6
             form(action='/groups/activate/' + group.slug method='POST')
               button.btn.btn-success.my-2.my-sm-0(type="submit") Activate
               p(style="font-size: 6px;")='Activate when certain rewatch is happening'
         else if typeof user != 'undefined' && group.is_active == true && group.admins.indexOf(user.name) > -1
-          div.col-lg-6.col-3
+          div.col-6
             form(action='/groups/remove/' + group.slug method='POST')
               button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Cancel
               p(style="font-size: 6px;")='This cannot be reversed'
         else if typeof user != 'undefined' && group.attending_users.indexOf(user.name) > -1
-          div.col-lg-6.col-3
+          div.col-6
             form(action='/groups/leave/' + group.slug method='POST')
               button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Leave
         else
-          div.col-lg-6.col-3
+          div.col-6
             form(action='/groups/join/' + group.slug method='POST')
               button.btn.btn-success.my-2.my-sm-0(type="submit") Join
         if typeof user != 'undefined' 
-          div.col-lg-6.col-9.enable-push
+          div.col-6.enable-push
             div.toggle-switch
               input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
               label(for="enable-push-checkbox")
-            div.message="Notifications(N/Y)"
+            p(style="font-size: 8px;")="Notifications(N/Y)"
+            //div.message="Notifications(N/Y)"
       
         if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
           div.col-lg-12.mt-sm-2
