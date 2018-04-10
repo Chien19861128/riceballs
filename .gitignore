@@ -1,5 +1,4 @@
 config/*
 node_modules/**
-bin/www
 cert/*
 public/images/cover/*

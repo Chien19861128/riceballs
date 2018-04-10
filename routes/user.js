@@ -12,8 +12,6 @@ exports.me = function( req, res, next ){
  
   var in_groups = req.user.admin_groups.concat(req.user.joined_groups);
     
-  console.log('[in_groups]' + in_groups);
-    
   //var query_admin_groups = Group.find({slug : {$in: req.user.admin_groups}});
   //var query_joined_groups = Group.find({slug : {$in: req.user.joined_groups}});
   var query_schedule = Group_Schedule.find({
@@ -90,8 +88,6 @@ exports.me = function( req, res, next ){
           current_episodes = current_episodes + ", " + val.episode_number;
         }
       }
-        
-      console.log('[current_schedule]' + current_schedule);
         
       res.render( 'user_me', {
         title       : 'My Groups',

@@ -49,14 +49,16 @@ exports.index = function ( req, res, next ){
   var query_ongoing_groups = Group.
     find({
         //is_active: true,
-        //start_time: { $lt: Date.now() }
+        attending_users_count: { Sgte: 5 },
+        start_time: { $lt: Date.now() }
     }).
     sort( '-attending_users_count -update_time' ).
     limit(6);
     
   var query_upcoming_groups = Group.
     find({
-        is_active: true,
+        //is_active: true,
+        attending_users_count: { Sgte: 5 },
         start_time: { $gt: Date.now() }
     }).
     sort( '-attending_users_count -update_time' ).

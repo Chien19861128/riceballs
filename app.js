@@ -108,16 +108,18 @@ app.get('/',            routes.index);
 app.get('/elasticsearch',     elasticsearch.index);
 
 app.get('/groups/new',              groups.new);
-app.get('/groups/:slug',            groups.detail);
 app.post('/groups/create',          groups.create);
 app.post('/groups/create_schedule', groups.create_schedule);
 app.post('/groups/join/:slug',      groups.join);
 app.post('/groups/leave/:slug',     groups.leave);
+app.post('/groups/activate/:slug',      groups.join);
+app.post('/groups/remove/:slug',     groups.leave);
 app.get('/groups/ongoing',          groups.ongoing);
 app.get('/groups/upcoming',         groups.upcoming);
+app.get('/groups/:slug',            groups.detail);
 app.get('/user/me',                 user.me);
-app.get('/push',                 push.index);
-app.get('/push/signup',          push.signup);
+app.get('/push',                    push.index);
+app.get('/push/signup',             push.signup);
 app.post('/push/save_subscription', push.save_subscription);
 
 app.get('/auth/reddit', function(req, res, next){
@@ -198,7 +200,10 @@ cron.schedule('55 * * * *', function(){
   d2.setDate(d2.getDate() + 1);
   d2.setHours(d2.getHours() + 1);
     
-  var query_group = Group.find({start_time : {$gt: d1, $lt: d2}});
+  var query_group = Group.find({
+      attending_users_count: { Sgte: 3 },
+      start_time : {$gt: d1, $lt: d2}
+  });
   var promise_group = query_group.exec();
 
   promise_group.then(function (group_val) {
@@ -242,7 +247,7 @@ cron.schedule('55 * * * *', function(){
   });
 });
 
-cron.schedule('50 * * * *', function(){
+cron.schedule('30 * * * *', function(){
   console.log('cronjob episode reminder');
     
   var d1 = new Date();
@@ -258,45 +263,51 @@ cron.schedule('50 * * * *', function(){
       var episode_number = group_schedule_val[i].episode_number;
       var discussion_hour = group_schedule_val[i].discussion_time.getUTCHours();
         
-      var query_group = Group.findOne({slug : group_schedule_val[i].group_slug});
+      var query_group = Group.findOne({
+          slug : group_schedule_val[i].group_slug},
+          attending_users_count: { Sgte: 5 }
+      );
       var promise_group = query_group.exec();
 
       promise_group.then(function (group_val) {
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          
+        if (group_val) {
+          var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
       
-        var payload = {
-          body: 'EP ' + episode_number + ' discussion starting at ' + discussion_hour + ':00 GMT',
-          title: group_val.name,
-          tag: 'episode_notice' + Date.now()
-        };    
+          var payload = {
+            body: 'EP ' + episode_number + ' discussion starting at ' + discussion_hour + ':00 GMT',
+            title: group_val.name,
+            tag: 'episode_notice' + Date.now()
+          };    
         
-        var all_users = group_val.admins.concat(group_val.attending_users);
+          var all_users = group_val.admins.concat(group_val.attending_users);
         
-        var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
-        var promise_user = query_user.exec(); 
+          var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
+          var promise_user = query_user.exec(); 
         
-        promise_user.then(function (user_val) {
-          for (i=0; i<user_val.length; i++) {
-            var ps = JSON.parse(user_val[i].push_subscription);
+          promise_user.then(function (user_val) {
+            for (i=0; i<user_val.length; i++) {
+              var ps = JSON.parse(user_val[i].push_subscription);
             
-            var pushSubscription = {
-              endpoint: ps.endpoint,
-              keys: {
-                auth: ps.keys.auth,
-                p256dh: ps.keys.p256dh
-              }
-            };
+              var pushSubscription = {
+                endpoint: ps.endpoint,
+                keys: {
+                  auth: ps.keys.auth,
+                  p256dh: ps.keys.p256dh
+                }
+              };
             
-            webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
-              if (err.statusCode === 410) {
-                console.log('Push fail: ', err);
-                //return deleteSubscriptionFromDatabase(subscription._id);
-              } else {
-                console.log('Subscription is no longer valid: ', err);
-              }
-            });
-          }
-        });
+              webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
+                if (err.statusCode === 410) {
+                  console.log('Push fail: ', err);
+                  //return deleteSubscriptionFromDatabase(subscription._id);
+                } else {
+                  console.log('Subscription is no longer valid: ', err);
+                }
+              });
+            }
+          });
+        }
       });
     }
   });

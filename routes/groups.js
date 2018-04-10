@@ -265,12 +265,50 @@ exports.leave = function( req, res, next ){
   });
 }
 
+exports.activate = function( req, res, next ){
+  if (typeof req.user == 'undefined') res.redirect('/login'); 
+  if (req.user.admin_groups.indexOf(req.params.slug) == -1) res.redirect( '/groups/' + req.params.slug );
+      
+  Group.update({
+    slug : req.params.slug
+  }, {
+    set: { 
+      is_active : true,
+      update_time : Date.now() 
+    }
+  }, function (err, updated_group) {
+    if( err ) return next( err );
+            
+    res.redirect( '/groups/' + req.params.slug );
+  });
+}
+
+exports.remove = function( req, res, next ){
+  if (typeof req.user == 'undefined') res.redirect('/login'); 
+  if (req.user.admin_groups.indexOf(req.params.slug) == -1) res.redirect( '/groups/' + req.params.slug );
+      
+  Group.remove({
+    slug : req.params.slug
+  }, function (err, updated_group) {
+    if( err ) return next( err );
+    
+    Group_Schedule.remove({
+      slug : req.params.slug
+    }, function (err, updated_group) {
+      if( err ) return next( err );
+            
+      res.redirect( '/groups/' + req.params.slug );
+    });  
+  });
+}
+
 exports.ongoing = function ( req, res, next ){
   req.session.login_redirect = req.originalUrl;
     
   var query_ongoing_groups = Group.
     find({
-        is_active: true,
+        //is_active: true,
+        attending_users_count: { Sgte: 5 },
         start_time: { $lt: Date.now() }
     }).
     sort( '-attending_users_count -update_time' );
@@ -290,7 +328,8 @@ exports.upcoming = function ( req, res, next ){
     
   var query_upcoming_groups = Group.
     find({
-        is_active: true,
+        //is_active: true,
+        attending_users_count: { Sgte: 5 },
         start_time: { $lt: Date.now() }
     }).
     sort( '-attending_users_count -update_time' );
