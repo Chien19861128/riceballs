@@ -17,7 +17,7 @@ block content
         if typeof user != 'undefined' && group.is_active == false && group.admins.indexOf(user.name) > -1
           div.col-lg-6.col-3
             form(action='/groups/activate/' + group.slug method='POST')
-              button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Activate
+              button.btn.btn-success.my-2.my-sm-0(type="submit") Activate
               p(style="font-size: 6px;")='Activate when certain rewatch is happening'
         else if typeof user != 'undefined' && group.is_active == true && group.admins.indexOf(user.name) > -1
           div.col-lg-6.col-3
