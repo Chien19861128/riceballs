@@ -297,7 +297,7 @@ exports.remove = function( req, res, next ){
     }, function (err, updated_group) {
       if( err ) return next( err );
             
-      res.redirect( '/groups/' + req.params.slug );
+      res.redirect( '/user/me' );
     });  
   });
 }
