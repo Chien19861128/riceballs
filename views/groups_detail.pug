@@ -9,6 +9,10 @@ block content
           h4= group.name
           a.float-right(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
           p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
+          if group.is_active == false
+            p(style="font-size: 8px;")= "status: Gouging interest."
+          else
+            p(style="font-size: 8px;")= "status: It's happening!"
           p= "Discussion Time " + discussion_hour + ":00 GMT"
         if typeof user != 'undefined' && group.is_active == false && group.admins.indexOf(user.name) > -1
           div.col-lg-6.col-3

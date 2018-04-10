@@ -201,8 +201,9 @@ cron.schedule('55 * * * *', function(){
   d2.setHours(d2.getHours() + 1);
     
   var query_group = Group.find({
-      attending_users_count: { Sgte: 3 },
-      start_time : {$gt: d1, $lt: d2}
+      start_time : {$gt: d1, $lt: d2},
+      is_active: true,
+      attending_users_count: { Sgte: 5 }
   });
   var promise_group = query_group.exec();
 
@@ -264,9 +265,10 @@ cron.schedule('30 * * * *', function(){
       var discussion_hour = group_schedule_val[i].discussion_time.getUTCHours();
         
       var query_group = Group.findOne({
-          slug : group_schedule_val[i].group_slug},
+          slug : group_schedule_val[i].group_slug,
+          is_active: true,
           attending_users_count: { Sgte: 5 }
-      );
+      });
       var promise_group = query_group.exec();
 
       promise_group.then(function (group_val) {
