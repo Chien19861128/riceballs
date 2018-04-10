@@ -272,7 +272,7 @@ exports.activate = function( req, res, next ){
   Group.update({
     slug : req.params.slug
   }, {
-    set: { 
+    $set: { 
       is_active : true,
       update_time : Date.now() 
     }
@@ -293,7 +293,7 @@ exports.remove = function( req, res, next ){
     if( err ) return next( err );
     
     Group_Schedule.remove({
-      slug : req.params.slug
+      group_slug : req.params.slug
     }, function (err, updated_group) {
       if( err ) return next( err );
             
