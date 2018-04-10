@@ -182,7 +182,7 @@ exports.detail = function( req, res, next ){
         });
       });
     } else {
-      res.render( 'groups_not_found', {
+      res.render( 'group_not_found', {
         title          : 'Cancelled',
         user           : req.user
       });
