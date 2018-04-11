@@ -76,7 +76,7 @@ exports.me = function( req, res, next ){
           date_cnt++;
                 
           current_date = schedule_date;
-          current_episodes = series_names[val.series_slug] + ' ' + val.episode_number;
+          current_episodes = series_names[val.series_slug] + ' EP ' + val.episode_number;
           current_series = val.series_slug;
           current_group = val.group_slug;
         } else if (i == (schedule.length - 1)) {

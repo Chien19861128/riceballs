@@ -12,9 +12,6 @@ exports.new = function ( req, res, next ){
   if (typeof req.user == 'undefined') res.redirect('/login');
   //var user_id = req.cookies ?
     //req.cookies.user_id : undefined;
-
-  console.log("req.user: " + JSON.stringify(req.user));
-  console.log("req.cookies.user_id: " + req.cookies.user_id);
     
   res.render( 'groups_new', {
       //res.render( 'index', {
@@ -81,10 +78,6 @@ exports.create = function ( req, res, next ){
 };
 
 exports.create_schedule = function ( req, res, next ){
-  console.log("[discussion_time]" + req.body.discussion_time);
-  console.log("[final_list]" + req.body.final_list);
-    
-  console.log("req.user: " + JSON.stringify(req.user));
         
   var discussion_time = req.body.discussion_time;    
   var final_list = req.body.final_list;
@@ -108,8 +101,6 @@ exports.create_schedule = function ( req, res, next ){
       });
     } else {
       schedule_time = Date.parse(list_split[i] + " " + discussion_time + " GMT");
-        console.log("[list_split[i]]" + list_split[i] + "[discussion_time]" + discussion_time);
-        console.log("[schedule_time]" + schedule_time);
       day_cnt++;
     }
   }
@@ -151,6 +142,14 @@ exports.detail = function( req, res, next ){
             
             discussion_hour = val.discussion_time.getUTCHours();
             current_date = schedule_date;
+          } else if (current_date != schedule_date && i == (group_schedule.length - 1)) {
+            current_schedule[date_cnt] = [current_date, current_episodes];
+            date_cnt++;
+                
+            current_date = schedule_date;
+            current_episodes = val.episode_number;
+        
+            current_schedule[date_cnt] = [current_date, current_episodes];
           } else if (current_date != schedule_date) {
             current_schedule[date_cnt] = [current_date, current_episodes];
             date_cnt++;

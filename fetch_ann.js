@@ -130,7 +130,9 @@ Series.remove({ ann_id: {$gte: config.fetch_ann.start} }, function (err) {
                                         }
                                     });
                                 }
-
+                                
+                                if (episode_count == 1 && element['episode'] && element['episode'].length > 1) episode_count=element['episode'].length;
+                                
                                 slug_value=slug(element['$']['name'] + '-' + vintage.substring(0, 10));
 
                                 new Series({
