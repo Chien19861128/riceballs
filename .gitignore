@@ -2,4 +2,3 @@ config/*
 node_modules/**
 cert/*
 public/images/cover/*
-bin/www
