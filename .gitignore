@@ -1,5 +1,3 @@
 config/*
 node_modules/**
 cert/*
-public/images/cover/*
-public/images/cover/*.jpg
