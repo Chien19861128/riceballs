@@ -1,13 +1,51 @@
 extends layout
 
 block content
+
+  if typeof series == 'undefined' && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+    script(src="/public/jquery-validation/dist/jquery.validate.min.js")
+    script(src="/public/easy-autocomplete/jquery.easy-autocomplete.min.js")
+    script.
+      $(document).ready(function () {
+      
+        var options = {
+          url: function(phrase) {
+            return "/elasticsearch?phrase=" + phrase;
+          },
+          getValue: function(item) {
+            return item._source.title + " (" +item._source.vintage + ")";
+          },
+          template: {
+            type: "custom",
+            method: function(value, item) {
+              return "<img src='/images/cover/" + item._source.slug + ".jpg' height='70' alt=' '/> " + item._source.title + " (" +item._source.vintage + ") [" + item._source.episode_count + " eps][" + item._source.type + "]";
+            }
+          },
+          list: {
+            onSelectItemEvent: function() {
+              var slug = $("#title").getSelectedItemData()._source.slug;
+
+              $("#series_slug").val(slug).trigger("change");
+            }
+          },
+        };
+        $("#title").easyAutocomplete(options);
+        $(".easy-autocomplete").removeAttr("style");
+        
+        $("#assign_series").validate();
+        $("#edit_name").validate();
+      });
     
   div.row.marketing
     div.col-lg-8
       div.row
         div.col-lg-12
-          h4= group.name
-          a.float-right(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
+          if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+            form.my-2.my-lg-0(id="edit_name" action='/groups/edit/' + group.slug method='POST')
+              input.form-control.col-lg-8.float-left(id="name" name="name" type="text" value=group.name aria-label="Group Name" required)
+              button.btn.btn-outline-success.my-2.my-sm-0.col-lg-4.float-right(type="submit") Edit
+          else
+            h4= group.name
           p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
           if group.attending_users_count < 5 && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
             p(style="font-size: 8px;")= "Need at least 3 members to receive notifications and show in front page."
@@ -15,25 +53,30 @@ block content
             p(style="font-size: 8px;")= "status: Gouging interest."
           else
             p(style="font-size: 8px;")= "status: It's happening!"
-          p= "Discussion Time " + discussion_hour + ":00 GMT"
-        if typeof user != 'undefined' && group.is_active == false && group.admins.indexOf(user.name) > -1
-          div.col-6
-            form(action='/groups/activate/' + group.slug method='POST')
-              button.btn.btn-success.my-2.my-sm-0(type="submit") Activate
-              p(style="font-size: 6px;")='Activate when certain rewatch is happening'
-        else if typeof user != 'undefined' && group.is_active == true && group.admins.indexOf(user.name) > -1
-          div.col-6
-            form(action='/groups/remove/' + group.slug method='POST')
-              button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Cancel
-              p(style="font-size: 6px;")='This cannot be reversed'
+          if discussion_hour
+            p= "Discussion Time " + discussion_hour + ":00 GMT"
+        if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+          if group.is_bot_made == true
+            div.col-6
+              p.text-danger(style="font-size: 11px;")= "Your threads with '[Rewatch][Spoilers] " + group.name + " - ' will be automatically added to this group, if the title is incorrect, edit the group title above."
+          else if group.is_active == false
+            div.col-6
+              form(action='/groups/activate/' + group.slug method='POST')
+                button.btn.btn-success.my-2.my-sm-0(type="submit") Activate
+                p(style="font-size: 6px;")='Activate when certain rewatch is happening'
+          else if group.is_active == true
+            div.col-6
+              form(action='/groups/remove/' + group.slug method='POST')
+                button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Cancel
+                p(style="font-size: 6px;")='This cannot be reversed'
         else if typeof user != 'undefined' && group.attending_users.indexOf(user.name) > -1
           div.col-6
             form(action='/groups/leave/' + group.slug method='POST')
-              button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Leave
+              button.btn.btn-outline-success.my-2.my-sm-0(type="submit") Unfollow
         else
           div.col-6
             form(action='/groups/join/' + group.slug method='POST')
-              button.btn.btn-success.my-2.my-sm-0(type="submit") Join
+              button.btn.btn-success.my-2.my-sm-0(type="submit") Follow
         if typeof user != 'undefined' 
           div.col-6.enable-push
             div.toggle-switch
@@ -44,13 +87,39 @@ block content
       
         if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
           div.col-lg-12.mt-sm-2
-            button.float-right.btn.btn-outline-info.my-2.my-sm-0.col-lg-4(onclick="clipboard()") Clipboard link
-            input.form-control.col-lg-8.mb-sm-2(type="text" value="" id="current_url")
-    div.col-lg-4
-      img(src="/images/cover/" + series.slug + ".jpg" alt="")
+            input.form-control.col-lg-8.mb-sm-2.float-left(type="text" value="" id="current_url")
+            button.btn.btn-outline-info.my-2.my-sm-0.col-lg-4.float-right(onclick="clipboard()") Clipboard link
+    if series
+      div.col-lg-4
+        img(src="/images/cover/" + series.slug + ".jpg" alt="")
+        p
+          a(class="font-italic" target="_blank" style="font-size: 8px;" href="https://www.animenewsnetwork.com/encyclopedia/anime.php?id=" + series.ann_id) AnimeNewsNetwork link >>
+    else if typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
+      div.col-lg-4
+        form.my-2.my-lg-0(id="assign_series" action='/groups/edit/' + group.slug method='POST')
+          input.form-control.col-lg-8.mb-sm-2(id="title" name="title" type="text" placeholder="Type and pick Series" aria-label="Series Title" required)
+          input.form-control.mb-sm-2(id="series_slug" name="series_slug" type="hidden" required)
+          button.btn.btn-outline-success.my-2.my-sm-0.mt-sm-2(type="submit") Assign Cover
+        p(style="font-size: 6px;")='Pick and assign a series to use as the cover.'
     div.col-lg-12
-      h5 Schedule
-      if group_schedule && group_schedule.length > 0
+      
+      if group.is_bot_made
+        if reddit_posts && reddit_posts.length > 0
+          h5.mt-2 Threads
+          table.table
+            thead.thead-dark
+              tr
+                td="Date"
+                td="Thread"
+            tbody
+              - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              each post_val, i in reddit_posts
+                tr
+                  td=monthNames[post_val.create_time.getUTCMonth()] + ' ' + post_val.create_time.getUTCDate() + ' ' + post_val.create_time.getUTCFullYear()
+                  td
+                    a(href=post_val.url)= post_val.title
+      else if group_schedule && group_schedule.length > 0
+        h5.mt-2 Schedule
         table.table
           thead.thead-dark
             tr
@@ -62,6 +131,9 @@ block content
               tr
                 each col, ii in row
                   td=col
+          
+        
+      
   footer.footer
     p 
   script(src="/javascripts/webpush.js")

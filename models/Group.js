@@ -18,6 +18,7 @@ var Group = new Schema({
     number      : Number,
     is_active   : Boolean,
     is_private  : Boolean,
+    is_bot_made : Boolean,
     interest_due_time: Date,
     start_time  : Date,
     create_time : Date,

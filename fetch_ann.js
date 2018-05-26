@@ -38,6 +38,10 @@ Series.remove({ ann_id: {$gte: config.fetch_ann.start} }, function (err) {
                 } else {
                     id_str = id_str + "/" + ii;
                 }
+                
+                if (ii >= config.fetch_ann.end && ii == (i+49)) {
+                    console.log('[done]');
+                }
             }
 
             i+=50;
@@ -192,21 +196,13 @@ Series.remove({ ann_id: {$gte: config.fetch_ann.start} }, function (err) {
                                       var extname = path.extname(pic_url);
 
                                       download(pic_https, 'public/images/cover/' + slug_value + extname, function(er){
-                                         if( er ) console.log(er);//return next( er );
+                                         if( er ) console.log('[download_pic]' + er);//return next( er );
                                       });
 
-                                      /*
-                                      request.get(pic_https, function(response) {
-                                        if (response && response.statusCode === 200) {
-                                          fs.write('public/images/cover/' + slug_value + extname, response.body, function() {
-                                            //console.log('Successfully downloaded file ' + url);
-                                          });
-                                        }
-                                      });*/
                                     } catch (err) {
                                       console.error('[Error][' + slug_value + ']', err.stack);
                                     }
-                                  }, 3000);
+                                  }, 1500);
                                 }
                             });
                         } else {
@@ -216,9 +212,15 @@ Series.remove({ ann_id: {$gte: config.fetch_ann.start} }, function (err) {
                 });
             }
 
-            https.request(options, callback).end();
-
-            setTimeout(cb, 3000);
+            const req = https.request(options, callback);
+            
+            req.on('error', (e) => {
+              console.error('[request]' + e);
+            });
+            
+            req.end();
+            
+            setTimeout(cb, 3500);
         },
         function (err) {
             if (err) console.log('[err]' + err);

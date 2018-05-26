@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    
+  div.row.marketing
+    div.col-lg-8
+      div.row
+        div.col-lg-12
+          h4= reddit_post.title
+          p(style="font-size: 8px;")='author:' + reddit_post.reddit_name
+        if typeof reddit_post.group_slug != 'undefined'
+          a.btn.btn-outline-primary(href='/groups/' + reddit_post.group_slug)= "All related threads"
+        if groups && groups.length > 0
+          h5= "Pick a group to assign this post to:"
+          each group_val, i in groups
+            - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            div.col-lg-12
+              a.mr-1(href="/groups/" + group_val.slug)= group_val.name + ' (' + monthNames[group_val.create_time.getUTCMonth()] + ' ' + group_val.create_time.getUTCDate() + ' ' + group_val.create_time.getUTCFullYear() + ')'
+              form.d-inline(action='/reddit_post/' + reddit_post.id + '/assign_to/' + group_val.slug method='POST')
+                button.btn.btn-outline-success(type="submit") Assign

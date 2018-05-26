@@ -6,6 +6,7 @@ var Series         = mongoose.model( 'Series' );
 var Episode        = mongoose.model( 'Episode' );
 var Group          = mongoose.model( 'Group' );
 var Group_Schedule = mongoose.model( 'Group_Schedule' );
+var Reddit_Post    = mongoose.model( 'Reddit_Post' );
 
 exports.new = function ( req, res, next ){
   req.session.login_redirect = req.originalUrl;
@@ -115,75 +116,101 @@ exports.detail = function( req, res, next ){
   var query_group = Group.findOne({slug : req.params.slug});
   var query_group_schedule = Group_Schedule.find({group_slug : req.params.slug}).
     sort('discussion_time episode_number');
+  var query_reddit_post = Reddit_Post.find({group_slug : req.params.slug}).
+    sort('create_time');
     
   var promise_group = query_group.exec();
   var promise_group_schedule = query_group_schedule.exec();
+  var promise_reddit_post = query_reddit_post.exec();
 
   promise_group.then(function (group) {
       
     if (group) {
       
       promise_group_schedule.then(function (group_schedule) {  
-       
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var discussion_hour;
-        var current_date;
-        var current_episodes = "";
-        var date_cnt = 0;
-        var current_schedule = new Array();
         
-        for (i=0; i<group_schedule.length; i++) {
-          var val = group_schedule[i];
+        if (group_schedule.length > 0) {
+          var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          var discussion_hour;
+          var current_date;
+          var current_episodes = "";
+          var date_cnt = 0;
+          var current_schedule = new Array();
+        
+          for (i=0; i<group_schedule.length; i++) {
+            var val = group_schedule[i];
           
-          var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear();
+            var schedule_date = monthNames[val.discussion_time.getUTCMonth()] + ' ' + val.discussion_time.getUTCDate() + ' ' + val.discussion_time.getUTCFullYear();
           
-          if (typeof current_date == "undefined") {
-            current_episodes = val.episode_number;
+            if (typeof current_date == "undefined") {
+              current_episodes = val.episode_number;
             
-            discussion_hour = val.discussion_time.getUTCHours();
-            current_date = schedule_date;
-          } else if (current_date != schedule_date && i == (group_schedule.length - 1)) {
-            current_schedule[date_cnt] = [current_date, current_episodes];
-            date_cnt++;
+              discussion_hour = val.discussion_time.getUTCHours();
+              current_date = schedule_date;
+            } else if (current_date != schedule_date && i == (group_schedule.length - 1)) {
+              current_schedule[date_cnt] = [current_date, current_episodes];
+              date_cnt++;
                 
-            current_date = schedule_date;
-            current_episodes = val.episode_number;
+              current_date = schedule_date;
+              current_episodes = val.episode_number;
         
-            current_schedule[date_cnt] = [current_date, current_episodes];
-          } else if (current_date != schedule_date) {
-            current_schedule[date_cnt] = [current_date, current_episodes];
-            date_cnt++;
+              current_schedule[date_cnt] = [current_date, current_episodes];
+            } else if (current_date != schedule_date) {
+              current_schedule[date_cnt] = [current_date, current_episodes];
+              date_cnt++;
                 
-            current_date = schedule_date;
-            current_episodes = val.episode_number;
-          } else if (i == (group_schedule.length - 1)) {
-            current_episodes = current_episodes + ", " + val.episode_number;
+              current_date = schedule_date;
+              current_episodes = val.episode_number;
+            } else if (i == (group_schedule.length - 1)) {
+              current_episodes = current_episodes + ", " + val.episode_number;
         
-            current_schedule[date_cnt] = [current_date, current_episodes];
-          } else {
-            current_episodes = current_episodes + ", " + val.episode_number;
+              current_schedule[date_cnt] = [current_date, current_episodes];
+            } else {
+              current_episodes = current_episodes + ", " + val.episode_number;
+            }
           }
-        }
         
-        var query_series = Series.findOne({slug : group_schedule[0].series_slug});
-        var promise_series = query_series.exec();
+          var query_series = Series.findOne({slug : group_schedule[0].series_slug});
+          var promise_series = query_series.exec();
         
-        promise_series.then(function (series) {
-          res.render( 'groups_detail', {
-            title          : group.name,
-            series         : series,
-            group          : group,
-            group_schedule : current_schedule,
-            discussion_hour: discussion_hour,
-            current        : req.params.slug,
-            user           : req.user
+          promise_series.then(function (series) {
+            promise_reddit_post.then(function (reddit_posts) {
+              res.render( 'groups_detail', {
+                title          : group.name,
+                series         : series,
+                group          : group,
+                group_schedule : current_schedule,
+                discussion_hour: discussion_hour,
+                current        : req.params.slug,
+                reddit_posts   : reddit_posts,
+                user           : req.user
+              });
+            });
           });
-        });
+        } else {
+          var query_series = Series.findOne({slug : group.series_slugs[0]});
+          var promise_series = query_series.exec();
+            
+          promise_series.then(function (series) {
+            promise_reddit_post.then(function (reddit_posts) {
+              res.render( 'groups_detail', {
+                title          : group.name,
+                series         : series,
+                group          : group,
+                //group_schedule : current_schedule,
+                //discussion_hour: discussion_hour,
+                current        : req.params.slug,
+                reddit_posts   : reddit_posts,
+                user           : req.user
+              });
+            });
+          });
+        }
       });
     } else {
       res.render( 'group_not_found', {
-        title          : 'Cancelled',
-        user           : req.user
+        title: 'Cancelled',
+        user : req.user
       });
     }
   });
@@ -221,11 +248,13 @@ exports.join = function( req, res, next ){
         
           req.user.joined_groups.push(group.slug);
             
-          res.redirect( '/groups/' + req.params.slug );
+          if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect  );
+          else res.redirect( '/groups/' + req.params.slug );
         });
       });
     } else {
-      res.redirect( '/groups/' + req.params.slug );
+      if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect  );
+      else res.redirect( '/groups/' + req.params.slug );
     }
   });
 }
@@ -241,7 +270,8 @@ exports.leave = function( req, res, next ){
     var user_index = new_attending_users.indexOf(req.user.name);
       
     if (user_index == -1) {
-      res.redirect( '/groups/' + req.params.slug );
+      if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect  );
+      else res.redirect( '/groups/' + req.params.slug );
     } else {
       new_attending_users.splice(user_index, 1);
       
@@ -266,7 +296,8 @@ exports.leave = function( req, res, next ){
           var group_index = req.user.joined_groups.indexOf(group.slug);
           req.user.joined_groups.splice(user_index, 1);
             
-          res.redirect( '/groups/' + req.params.slug );
+          if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect  );
+          else res.redirect( '/groups/' + req.params.slug );
         });
       });
     }
@@ -310,6 +341,26 @@ exports.remove = function( req, res, next ){
   });
 }
 
+exports.edit = function( req, res, next ){
+  if (typeof req.user == 'undefined') res.redirect('/login'); 
+  if (req.user.admin_groups.indexOf(req.params.slug) == -1) res.redirect( '/groups/' + req.params.slug );
+
+  var update_fields = {};
+    
+  if (req.body.series_slug) update_fields = {$push: {series_slugs: req.body.series_slug}, $set: {update_time: Date.now()}};
+  if (req.body.name) update_fields = {$set: {name: req.body.name, update_time: Date.now()}};  
+    
+  Group.update({
+      slug : req.params.slug
+  }, update_fields, function (err, updated_group) {
+    console.log('[err]' + err);  
+      
+    if( err ) return next( err );
+            
+    //res.redirect( '/groups/' + req.params.slug );
+  });
+};
+
 exports.ongoing = function ( req, res, next ){
   req.session.login_redirect = req.originalUrl;
     
@@ -351,6 +402,8 @@ exports.upcoming = function ( req, res, next ){
     });
   });
 };
+
+
 /*
 exports.destroy = function ( req, res, next ){
   Group.findById( req.params.id, function ( err, group ){

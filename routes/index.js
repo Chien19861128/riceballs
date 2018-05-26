@@ -3,6 +3,7 @@ var mongoose = require( 'mongoose' );
 var Series   = mongoose.model( 'Series' );
 var Episode  = mongoose.model( 'Episode' );
 var Group    = mongoose.model( 'Group' );
+var Reddit_Post = mongoose.model( 'Reddit_Post' );
 //var Promise  = require('bluebird');
 
 var request = require("request");
@@ -45,35 +46,49 @@ exports.index = function ( req, res, next ){
     
   //var allPromise = Promise.all([ initialize('https://api.github.com/users/narenaryan'), initialize('https://api.github.com/users/chien19861128') ]);
   //allPromise.then(console.log, console.error);
+  
+  var post_page = 1;
+  var post_skip = 0;
+  var post_limit = 10;
+  
+  if (typeof req.query.post_page != 'undefined') {
+      post_page = req.query.post_page;
+      post_skip = (post_page - 1) * 10;
+  }
     
-  var query_ongoing_groups = Group.
+  var query_reddit_posts = Reddit_Post.
+    find({}).
+    populate('group').
+    sort( '-create_time' ).
+    skip(post_skip).
+    limit(10);
+    
+  var query_recent_groups = Group.
     find({
         //is_active: true,
-        attending_users_count: { $gte: 3 },
-        start_time: { $lt: Date.now() }
+        //attending_users_count: { $gte: 3 },
+        //start_time: { $lt: Date.now() },
+        //end_time: { $gt: Date.now() }
+        series_slugs: { $ne: null }
     }).
     sort( '-attending_users_count -update_time' ).
     limit(6);
     
-  var query_upcoming_groups = Group.
-    find({
-        //is_active: true,
-        attending_users_count: { $gte: 3 },
-        start_time: { $gt: Date.now() }
-    }).
-    sort( '-attending_users_count -update_time' ).
-    limit(6);
   //assert.ok(!(query instanceof Promise));
-  var promise_ongoing_groups = query_ongoing_groups.exec();
-  var promise_upcoming_groups = query_upcoming_groups.exec();
+  var promise_reddit_posts = query_reddit_posts.exec();
+  var promise_recent_groups = query_recent_groups.exec();
 
-  promise_ongoing_groups.then(function (ongoing_groups) {
-    promise_upcoming_groups.then(function (upcoming_groups) {
+  promise_reddit_posts.then(function (reddit_posts) {
+      
+    console.log(reddit_posts);
+      
+    promise_recent_groups.then(function (recent_groups) {
       res.render( 'index', {
-        title          : 'Home',
-        ongoing_groups : ongoing_groups,
-        upcoming_groups: upcoming_groups,
-        user           : req.user
+        title         : 'Home',
+        reddit_posts  : reddit_posts,
+        recent_groups : recent_groups,
+        user          : req.user,
+        post_page     : post_page
       });
     });
   });

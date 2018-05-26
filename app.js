@@ -24,6 +24,8 @@ var Series  = require('./models/Series');
 var Episode = require('./models/Episode');
 var Group   = require('./models/Group');
 var Group_Schedule = require('./models/Group_Schedule');
+var Reddit_Post = require('./models/Reddit_Post');
+var Reddit_Comment_User = require('./models/Reddit_Comment_User');
 mongoose.connect(config.mongoose.connection);
 
 passport.serializeUser(function(user, done) {
@@ -59,7 +61,8 @@ var routes        = require('./routes');
 var elasticsearch = require('./routes/elasticsearch.js');
 var groups        = require('./routes/groups.js');
 var user          = require('./routes/user.js');
-var push       = require('./routes/push.js');
+var push          = require('./routes/push.js');
+var reddit_post   = require('./routes/reddit_post.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -114,6 +117,7 @@ app.post('/groups/join/:slug',      groups.join);
 app.post('/groups/leave/:slug',     groups.leave);
 app.post('/groups/activate/:slug',  groups.activate);
 app.post('/groups/remove/:slug',    groups.remove);
+app.post('/groups/edit/:slug',      groups.edit);
 app.get('/groups/ongoing',          groups.ongoing);
 app.get('/groups/upcoming',         groups.upcoming);
 app.get('/groups/:slug',            groups.detail);
@@ -121,6 +125,8 @@ app.get('/user/me',                 user.me);
 app.get('/push',                    push.index);
 app.get('/push/signup',             push.signup);
 app.post('/push/save_subscription', push.save_subscription);
+app.get('/reddit_post/:id',       reddit_post.detail);
+app.post('/reddit_post/:id/assign_to/:group_slug', reddit_post.assign_to);
 
 app.get('/auth/reddit', function(req, res, next){
   req.session.state = crypto.randomBytes(32).toString('hex');
@@ -190,6 +196,7 @@ webpush.setVapidDetails(
   config.webpush.privateKey
 );
 
+/*
 cron.schedule('55 * * * *', function(){
   console.log('cronjob 1 day reminder');
     
@@ -237,7 +244,6 @@ cron.schedule('55 * * * *', function(){
           webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
             if (err.statusCode === 410) {
               console.log('Push fail: ', err);
-              //return deleteSubscriptionFromDatabase(subscription._id);
             } else {
               console.log('Subscription is no longer valid: ', err);
             }
@@ -249,7 +255,7 @@ cron.schedule('55 * * * *', function(){
 });
 
 cron.schedule('30 * * * *', function(){
-  console.log('cronjob episode reminder');
+  console.log('cronjob episode 30 min reminder');
     
   var d1 = new Date();
   var d2 = new Date();
@@ -279,7 +285,7 @@ cron.schedule('30 * * * *', function(){
           var payload = {
             body: 'EP ' + episode_number + ' discussion starting at ' + discussion_hour + ':00 GMT',
             title: group_val.name,
-            tag: 'episode_notice' + Date.now()
+            tag: 'episode_30m_notice' + Date.now()
           };    
         
           var all_users = group_val.admins.concat(group_val.attending_users);
@@ -302,7 +308,6 @@ cron.schedule('30 * * * *', function(){
               webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
                 if (err.statusCode === 410) {
                   console.log('Push fail: ', err);
-                  //return deleteSubscriptionFromDatabase(subscription._id);
                 } else {
                   console.log('Subscription is no longer valid: ', err);
                 }
@@ -312,5 +317,72 @@ cron.schedule('30 * * * *', function(){
         }
       });
     }
+  });
+});
+*/
+
+cron.schedule('*/20 * * * *', function(){
+  console.log('cronjob new post reminder');
+    
+  var query_reddit_posts = Reddit_Post.
+    find({
+        is_notified: false,
+        group_slug: { $ne: null }
+    }).
+    populate('group');
+  var promise_reddit_posts = query_reddit_posts.exec();
+
+  promise_reddit_posts.then(function (reddit_posts_val) {
+    for (i=0; i<reddit_posts_val.length; i++) {
+      if (reddit_posts_val[i].group) {
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      
+        var payload = {
+          body: reddit_posts_val[i].title,
+          title: "New post is live!",
+          tag: 'episode_live_notice' + Date.now()
+        };    
+        
+        var all_users = reddit_posts_val[i].group.admins.concat(reddit_posts_val[i].group.attending_users);
+        
+        var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
+        var promise_user = query_user.exec(); 
+        
+        promise_user.then(function (user_val) {
+          for (i=0; i<user_val.length; i++) {
+            var ps = JSON.parse(user_val[i].push_subscription);
+            
+            var pushSubscription = {
+              endpoint: ps.endpoint,
+              keys: {
+                auth: ps.keys.auth,
+                p256dh: ps.keys.p256dh
+              }
+            };
+            
+            webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
+              if (err.statusCode === 410) {
+                console.log('Push fail: ', err);
+                //return deleteSubscriptionFromDatabase(subscription._id);
+              } else {
+                console.log('Subscription is no longer valid: ', err);
+              }
+            });
+          }
+        });
+      }
+    }
+  });
+    
+  Reddit_Post.update({
+      is_notified: false,
+      group_slug: { $ne: null }
+  }, {
+      $set: { 
+          is_notified: true,
+          update_time : Date.now() 
+      }
+  }, function (err, updated_reddit_post) {
+    if( err ) return next( err );
   });
 });
