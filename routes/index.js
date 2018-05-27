@@ -80,8 +80,6 @@ exports.index = function ( req, res, next ){
 
   promise_reddit_posts.then(function (reddit_posts) {
       
-    console.log(reddit_posts);
-      
     promise_recent_groups.then(function (recent_groups) {
       res.render( 'index', {
         title         : 'Home',
