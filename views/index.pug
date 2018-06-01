@@ -4,9 +4,22 @@ block content
 
   div.row.marketing
     - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    if reddit_posts.length > 0
+    if typeof user != 'undefined'
+      div.col-lg-12.mb-sm-2
+        h7= "/r/anime Rewatch Posts "
+        if filter=="following"
+          div.ml-2.btn-group
+            a.btn.btn-outline-secondary(href="/") All
+            a.btn.btn-secondary(href="/?filter=following") Following
+        else
+          div.ml-2.btn-group
+            a.btn.btn-secondary(href="/") All
+            a.btn.btn-outline-secondary(href="/?filter=following") Following
+    else
       div.col-lg-12.mb-sm-2
         h7= "/r/anime Rewatch Posts"
+    
+    if reddit_posts.length > 0
       div.container.mb-sm-3.mb-1
         div.row
           if reddit_posts.length > 0
@@ -37,7 +50,7 @@ block content
               - var next_page = parseInt("post_page")+1;
               if post_page > 1
                 li.page-item
-                  a.page-link(href="/?post_page=" + prev_page aria-label="Previous")
+                  a.page-link(href="/?post_page=" + prev_page + "&filter=" + filter aria-label="Previous")
                     span(aria-hidden="true") &laquo;
                     span.sr-only Previous
               else
@@ -47,7 +60,7 @@ block content
                     span.sr-only Previous
               if reddit_posts.length == 10
                 li.page-item
-                  a.page-link(href="/?post_page=" + next_page aria-label="Next")
+                  a.page-link(href="/?post_page=" + next_page + "&filter=" + filter aria-label="Next")
                     span(aria-hidden="true") &raquo;
                     span.sr-only Next
               else
@@ -59,7 +72,7 @@ block content
             p.font-italic="No more posts"
             if post_page > 1
               li.page-item
-                a.page-link(href="/?post_page=" + prev_page aria-label="Previous")
+                a.page-link(href="/?post_page=" + prev_page + "&filter=" + filter aria-label="Previous")
                   span(aria-hidden="true") &laquo;
                   span.sr-only Previous
             else

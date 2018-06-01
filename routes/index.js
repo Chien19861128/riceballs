@@ -46,6 +46,22 @@ exports.index = function ( req, res, next ){
     
   //var allPromise = Promise.all([ initialize('https://api.github.com/users/narenaryan'), initialize('https://api.github.com/users/chien19861128') ]);
   //allPromise.then(console.log, console.error);
+  var reddit_post_fields = {};
+  var group_fields = {
+        is_active: true,
+        series_slugs: { $ne: null }
+    };
+    
+  if (typeof req.query.filter != 'undefined' && req.query.filter == 'following') {
+      
+    console.log('[req.query.filter]' + req.query.filter);
+    if (typeof req.user == 'undefined') res.redirect('/login');
+ 
+    var in_groups = req.user.admin_groups.concat(req.user.joined_groups);
+      
+    reddit_post_fields.group_slug = {$in: in_groups};
+    group_fields.slug = {$in: in_groups};
+  }
   
   var post_page = 1;
   var post_skip = 0;
@@ -57,36 +73,31 @@ exports.index = function ( req, res, next ){
   }
     
   var query_reddit_posts = Reddit_Post.
-    find({}).
+    find(reddit_post_fields).
     populate('group').
     sort( '-create_time' ).
     skip(post_skip).
     limit(10);
     
-  var query_recent_groups = Group.
-    find({
-        //is_active: true,
-        //attending_users_count: { $gte: 3 },
-        //start_time: { $lt: Date.now() },
-        //end_time: { $gt: Date.now() }
-        series_slugs: { $ne: null }
-    }).
-    sort( '-attending_users_count -update_time' ).
+  var query_groups = Group.
+    find(group_fields).
+    sort( '-update_time -attending_users_count' ).
     limit(6);
     
   //assert.ok(!(query instanceof Promise));
   var promise_reddit_posts = query_reddit_posts.exec();
-  var promise_recent_groups = query_recent_groups.exec();
+  var promise_groups = query_groups.exec();
 
   promise_reddit_posts.then(function (reddit_posts) {
       
-    promise_recent_groups.then(function (recent_groups) {
+    promise_groups.then(function (groups) {
       res.render( 'index', {
-        title         : 'Home',
-        reddit_posts  : reddit_posts,
-        recent_groups : recent_groups,
-        user          : req.user,
-        post_page     : post_page
+        title        : 'Home',
+        reddit_posts : reddit_posts,
+        recent_groups: groups,
+        user         : req.user,
+        post_page    : post_page,
+        req          : req.query.filter
       });
     });
   });

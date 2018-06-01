@@ -14,10 +14,10 @@ exports.me = function( req, res, next ){
     
   //var query_admin_groups = Group.find({slug : {$in: req.user.admin_groups}});
   //var query_joined_groups = Group.find({slug : {$in: req.user.joined_groups}});
-  var query_schedule = Group_Schedule.find({
+  var query_group = Group.find({
       discussion_time: {$gt: Date.now()},
       group_slug: {$in: in_groups}}).
-    sort('discussion_time series_slug episode_number');
+    sort('-update_time');
     
   //var promise_admin_groups = query_admin_groups.exec();
   //var promise_joined_groups = query_joined_groups.exec();
