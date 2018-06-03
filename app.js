@@ -103,6 +103,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 //app.use('/', index);
 //app.use('/users', users);
+if (config.env == 'production') {
+  app.use(function(req, res, next) {
+    if ((req.get('X-Forwarded-Proto') !== 'https')) {
+      res.redirect('https://' + req.get('Host') + req.url);
+    } else
+    next();
+  });
+}
 
 // Routes
 app.use(routes.current_user);
