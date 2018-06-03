@@ -71,14 +71,15 @@ app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-
-if (config.env == 'production') {
-  app.use(function(req, res, next) {
-    if ((req.get('X-Forwarded-Proto') !== 'https')) {
-      res.redirect('https://' + req.get('Host') + req.url);
-    } else
-    next();
-  });
+function ensureSecure(req, res, next) {
+    console.log(req.protocol + process.env.PORT + '' + req.hostname + req.url);
+    if(req.secure || req.hostname=='localhost'){
+        //Secure request, continue to next middleware
+        next();
+    }else{
+        res.redirect('https://' + req.hostname + req.url);
+        console.log(req.protocol + process.env.PORT + '' + req.hostname + req.url);
+    }
 }
 
 app.use(logger('dev'));
@@ -87,6 +88,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+if (config.env == 'production') app.all('*', ensureSecure);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/public/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
