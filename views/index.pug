@@ -5,7 +5,7 @@ block content
   div.row.marketing
     - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
     if typeof user != 'undefined'
-      div.col-lg-12.mb-sm-2
+      div.col-lg-9.col-md-7.mb-2
         h7= "/r/anime Rewatch Posts "
         if filter=="following"
           div.ml-2.btn-group
@@ -15,6 +15,12 @@ block content
           div.ml-2.btn-group
             a.btn.btn-secondary(href="/") All
             a.btn.btn-outline-secondary(href="/?filter=following") Following
+      div.col-lg-3.col-md-5
+        div.enable-push
+          div.toggle-switch
+            input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+            label(for="enable-push-checkbox")
+          div.message="Notifications(N/Y)"
     else
       div.col-lg-12.mb-sm-2
         h7= "/r/anime Rewatch Posts"
@@ -105,14 +111,6 @@ block content
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
                     p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/members:' + recent_val.attending_users_count
                     a.btn.btn-primary(href='/groups/' + recent_val.slug)= 'Schedule'
-        //div.container
-          nav.navbar.navbar-expand-lg.navbar-light.bg-light.rounded
-            span.col-lg-3= ongoing_val.name
-            if typeof ongoing_val.start_time != 'undefined'
-              span.col-lg-4= ' Starting ' + monthNames[ongoing_val.start_time.getMonth()] + ' ' + ongoing_val.start_time.getDate() + ' ' + ongoing_val.start_time.getFullYear() +' @' + ongoing_val.start_time.getHours() + ':00GMT'
-            //span.col-lg-3= ' ' + ongoing_val.attending_users_count + ' members'
-            a.col-lg-4(href='/groups/' + ongoing_val.slug)= 'See Schedule >>'
-          p(style="padding-left: 10px;margin-bottom: 10px;font-size: 6px;")='host(s):' + ongoing_val.admins + '/members:' + ongoing_val.attending_users_count
-      //if ongoing_groups.length == 6
-        div.col-lg-12
-          a.float-right(href="/groups/ongoing") More >> 
+  footer.footer
+    p 
+  script(src="/javascripts/webpush.js")
