@@ -70,6 +70,17 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+
+if (config.env == 'production') {
+  app.use(function(req, res, next) {
+    if ((req.get('X-Forwarded-Proto') !== 'https')) {
+      res.redirect('https://' + req.get('Host') + req.url);
+    } else
+    next();
+  });
+}
+
 app.use(logger('dev'));
 app.use(methodOverride());
 app.use(bodyParser.json());
@@ -103,14 +114,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 //app.use('/', index);
 //app.use('/users', users);
-if (config.env == 'production') {
-  app.use(function(req, res, next) {
-    if ((req.get('X-Forwarded-Proto') !== 'https')) {
-      res.redirect('https://' + req.get('Host') + req.url);
-    } else
-    next();
-  });
-}
 
 // Routes
 app.use(routes.current_user);
