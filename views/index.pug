@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  div.row.marketing
+  div.row
     - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
     if typeof user != 'undefined'
       div.col-lg-9.col-md-7.mb-2
@@ -100,10 +100,10 @@ block content
               div.card(style="height : 200px")
                 div.row
                   if recent_val.series_slugs[0]
-                    div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/cover/" + recent_val.series_slugs[0] + ".jpg) center no-repeat;background-size: cover;")
+                    div.col-lg-5.col-md-5.col-sm-4.col-5.card-img-top(style="height :200px;background: url(/images/cover/" + recent_val.series_slugs[0] + ".jpg) center no-repeat;background-size: cover;")
                   else
-                    div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/logo.png) center no-repeat;background-size: cover; background-size: 100px 100px;")
-                  div.col-lg-7.col-md-7.col-sm-9.col-8
+                    div.col-lg-5.col-md-5.col-sm-4.col-5.card-img-top(style="height :200px;background: url(/images/logo.png) center no-repeat;background-size: cover; background-size: 100px 100px;")
+                  div.col-lg-7.col-md-7.col-sm-8.col-7
                     div.card-body
                     h7.card-title= recent_val.name
                   
