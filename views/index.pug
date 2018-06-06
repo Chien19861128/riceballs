@@ -6,15 +6,15 @@ block content
     - var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
     if typeof user != 'undefined'
       div.col-lg-9.col-md-7.mb-2
-        h7= "/r/anime Rewatch Posts "
+        h5.font-weight-bold= "/r/anime Rewatch Posts "
         if filter=="following"
           div.ml-2.btn-group
-            a.btn.btn-outline-secondary(href="/") All
-            a.btn.btn-secondary(href="/?filter=following") Following
+            a.btn.btn-sm.btn-outline-secondary(href="/") All
+            a.btn.btn-sm.btn-secondary(href="/?filter=following") Following
         else
           div.ml-2.btn-group
-            a.btn.btn-secondary(href="/") All
-            a.btn.btn-outline-secondary(href="/?filter=following") Following
+            a.btn.btn-sm.btn-secondary(href="/") All
+            a.btn.btn-sm.btn-outline-secondary(href="/?filter=following") Following
       div.col-lg-3.col-md-5
         div.enable-push
           div.toggle-switch
@@ -23,7 +23,7 @@ block content
           div.message="Notifications(N/Y)"
     else
       div.col-lg-12.mb-sm-2
-        h7= "/r/anime Rewatch Posts"
+        h5.font-weight-bold= "/r/anime Rewatch Posts"
     
     if reddit_posts.length > 0
       div.container.mb-sm-3.mb-1
@@ -57,22 +57,22 @@ block content
               if post_page > 1
                 li.page-item
                   a.page-link(href="/?post_page=" + prev_page + "&filter=" + filter aria-label="Previous")
-                    span(aria-hidden="true") &laquo;
+                    span(aria-hidden="true") &laquo; Previous
                     span.sr-only Previous
               else
                 li.page-item.disabled
                   a.page-link(href="#" aria-label="Previous")
-                    span(aria-hidden="true") &laquo;
+                    span(aria-hidden="true") &laquo; Previous
                     span.sr-only Previous
               if reddit_posts.length == 10
                 li.page-item
                   a.page-link(href="/?post_page=" + next_page + "&filter=" + filter aria-label="Next")
-                    span(aria-hidden="true") &raquo;
+                    span(aria-hidden="true") Next &raquo;
                     span.sr-only Next
               else
                 li.page-item.disabled
                   a.page-link(href="#" aria-label="Next")
-                    span(aria-hidden="true") &raquo;
+                    span(aria-hidden="true") Next &raquo;
                     span.sr-only Next
           else
             p.font-italic="No more posts"
@@ -92,7 +92,7 @@ block content
                 span.sr-only Next
     if recent_groups.length > 0
       div.col-lg-12.mb-sm-2
-        h7= "Recent Groups"
+        h5.font-weight-bold= "Recent Groups"
       div.container
         div.row
           each recent_val, i in recent_groups
@@ -102,7 +102,7 @@ block content
                   if recent_val.series_slugs[0]
                     div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/cover/" + recent_val.series_slugs[0] + ".jpg) center no-repeat;background-size: cover;")
                   else
-                    div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/logo.png) center no-repeat;background-size: cover;")
+                    div.col-lg-5.col-md-5.col-sm-3.col-4.card-img-top(style="height :200px;background: url(/images/logo.png) center no-repeat;background-size: cover; background-size: 100px 100px;")
                   div.col-lg-7.col-md-7.col-sm-9.col-8
                     div.card-body
                     h7.card-title= recent_val.name
@@ -110,7 +110,7 @@ block content
                     if typeof recent_val.start_time != 'undefined'
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
                     p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/members:' + recent_val.attending_users_count
-                    a.btn.btn-primary(href='/groups/' + recent_val.slug)= 'Schedule'
+                    a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'Threads'
   footer.footer
     p 
   script(src="/javascripts/webpush.js")
