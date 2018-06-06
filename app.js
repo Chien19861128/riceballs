@@ -354,7 +354,8 @@ cron.schedule('*/20 * * * *', function(){
         var payload = {
           body: reddit_posts_val[i].title,
           title: "New post is live!",
-          tag: 'episode_live_notice' + Date.now()
+          tag: 'episode_live_notice' + Date.now(),
+          url: reddit_posts_val[i].url
         };    
         
         var all_users = reddit_posts_val[i].group.admins.concat(reddit_posts_val[i].group.attending_users);

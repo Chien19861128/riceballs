@@ -46,9 +46,9 @@ block content
               button.btn.btn-outline-success.my-2.my-sm-0.col-lg-4.float-right(type="submit") Edit
           else
             h4= group.name
-          p(style="font-size: 8px;")='host(s):' + group.admins + '/members:' + group.attending_users_count
+          p(style="font-size: 8px;")='host(s):' + group.admins + '/followers:' + group.attending_users_count
           if group.attending_users_count < 5 && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
-            p(style="font-size: 8px;")= "Need at least 3 members to receive notifications and show in front page."
+            p(style="font-size: 8px;")= "Need at least 3 followers to receive notifications and show in front page."
           if group.is_active == false
             p(style="font-size: 8px;")= "status: Gouging interest."
           else

@@ -23,7 +23,8 @@ block content
           div.message="Notifications(N/Y)"
     else
       div.col-lg-12.mb-sm-2
-        h5.font-weight-bold= "/r/anime Rewatch Posts"
+        h5.d-inline.font-weight-bold= "/r/anime Rewatch Posts "
+        div.d-inline.text-muted(style="font-size: 7px;")= "(Links to /r/anime)"
     
     if reddit_posts.length > 0
       div.container.mb-sm-3.mb-1
@@ -31,6 +32,12 @@ block content
           if reddit_posts.length > 0
             each post_val, i in reddit_posts
               div.col-lg-9.col-md-7
+                if parseInt(post_val.score) > 99
+                  div.font-weight-bold.d-inline.text-danger.mr-1= post_val.score
+                else if parseInt(post_val.score) > 9
+                  div.font-weight-bold.d-inline.text-warning.mr-1= post_val.score
+                else
+                  div.font-weight-bold.d-inline.text-info.mr-1= post_val.score
                 a(href=post_val.url)= post_val.title
                 p.font-italic.ml-2.mb-lg-1.mb-0(style="font-size: 7px;")=post_val.reddit_name + ' - ' +  monthNames[post_val.create_time.getUTCMonth()] + ' ' + post_val.create_time.getUTCDate() + ' ' + post_val.create_time.getUTCFullYear()
               div.col-lg-3.col-md-5
@@ -52,8 +59,8 @@ block content
                   else
                     p.font-italic.d-inline.mr-1.mb-1.mb-lg-0(style="font-size: 12px;")="Not grouped"
             ul.pagination
-              - var prev_page = parseInt("post_page")-1;
-              - var next_page = parseInt("post_page")+1;
+              - var prev_page = parseInt(post_page)-1;
+              - var next_page = parseInt(post_page)+1;
               if post_page > 1
                 li.page-item
                   a.page-link(href="/?post_page=" + prev_page + "&filter=" + filter aria-label="Previous")
@@ -109,7 +116,7 @@ block content
                   
                     if typeof recent_val.start_time != 'undefined'
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
-                    p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/members:' + recent_val.attending_users_count
+                    p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/followers:' + recent_val.attending_users_count
                     a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'Threads'
   footer.footer
     p 
