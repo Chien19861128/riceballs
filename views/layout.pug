@@ -5,6 +5,12 @@ html(lang="en")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
     title="RewatchGroups - " + title
     link(rel='icon' href='/images/favicon.ico')
+    script(async src='https://www.googletagmanager.com/gtag/js?id=UA-120459328-1')
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-120459328-1');
     link(rel='stylesheet', href='/stylesheets/slip.css')
     link(rel='stylesheet', href='/bootstrap/dist/css/bootstrap.min.css')
     script(src="/public/jquery/jquery.min.js")
