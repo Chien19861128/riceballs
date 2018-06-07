@@ -29,23 +29,23 @@ html(lang="en")
     //link(rel='stylesheet', href='/stylesheets/style.css')
   body
     div.container
-      div.header.clearfix
+      div.header.clearfix.mb-3.mb-sm-4
+        h3.float-left.text-muted
+          a.text-muted(href="/")
+            img(border="0" alt="Rewatch Groups" src="/images/favicon.ico" width="64" height="64")
         nav
           ul.nav.nav-pills.float-right
+            li.nav-item
+              a.nav-link(href="/ptws") Top PTW Soon
             if typeof user != 'undefined'
-              //li.nav-item
-                a.nav-link.active(href="/user/me") MyGroups
+              li.nav-item
+                a.nav-link.active(href="/user/ptws") My PTW Soon
                   span.sr-only= (current)
-              //li.nav-item
-                a.nav-link(href="/user/" + user.name + "/settings") Settings
               li.nav-item
                 a.nav-link.pl-2.pr-1(href="/logout") Logout
             else
               li.nav-item
                 a.nav-link(href="/login") Login
-        h3.text-muted
-          a.text-muted(href="/")
-            img(border="0" alt="Rewatch Groups" src="/images/favicon.ico" width="64" height="64")
       
       block content
       

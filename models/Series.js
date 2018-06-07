@@ -16,6 +16,7 @@ var Series = new Schema({
     length       : Number, 
     vintage      : String, 
     official_tags: [],
+    ptws_count   : Number,
     create_time  : Date,
     update_time  : Date
 });

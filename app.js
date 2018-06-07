@@ -120,9 +120,10 @@ app.use(passport.session());
 
 // Routes
 app.use(routes.current_user);
-app.get('/',            routes.index);
+app.get('/',                        routes.index);
+app.get('/ptws',                    routes.ptws);
 
-app.get('/elasticsearch',     elasticsearch.index);
+app.get('/elasticsearch',           elasticsearch.index);
 
 app.get('/groups/new',              groups.new);
 app.post('/groups/create',          groups.create);
@@ -135,11 +136,17 @@ app.post('/groups/edit/:slug',      groups.edit);
 app.get('/groups/ongoing',          groups.ongoing);
 app.get('/groups/upcoming',         groups.upcoming);
 app.get('/groups/:slug',            groups.detail);
+
 app.get('/user/me',                 user.me);
+app.get('/user/ptws',               user.ptws);
+app.post('/user/ptws/add',          user.ptws_add);
+app.post('/user/ptws/remove/:slug', user.ptws_remove);
+
 app.get('/push',                    push.index);
 app.get('/push/signup',             push.signup);
 app.post('/push/save_subscription', push.save_subscription);
-app.get('/reddit_post/:id',       reddit_post.detail);
+
+app.get('/reddit_post/:id',         reddit_post.detail);
 app.post('/reddit_post/:id/assign_to/:group_slug', reddit_post.assign_to);
 
 app.get('/auth/reddit', function(req, res, next){

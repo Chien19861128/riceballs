@@ -1,0 +1,19 @@
+extends layout
+
+block content
+
+  div.col-lg-12
+    p.text-info= "Series people are planning to watch SOON."
+  if series.length > 0
+    each series_val, i in series
+      if i > 0
+        hr
+      div.row
+        div.col-12
+          div.font-weight-bold.d-inline.text-info.mr-1= (parseInt(i) + 1)
+          div.d-inline.mr-1
+            img(src="/images/cover/" + series_val.slug + ".jpg" alt="")
+          div.d-inline.mr-1= series_val.title
+          
+  footer.footer.mt-3
+    p 

@@ -13,6 +13,7 @@ var User = new Schema({
     update_time  : Date,
     admin_groups : [],
     joined_groups: [],
+    ptws         : [],
     push_subscription: String,
 });
 

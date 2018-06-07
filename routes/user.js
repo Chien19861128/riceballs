@@ -98,3 +98,94 @@ exports.me = function( req, res, next ){
     });
   });
 };
+    
+exports.ptws = function( req, res, next ){
+  req.session.login_redirect = req.originalUrl;
+  if (typeof req.user == 'undefined') res.redirect('/login');
+    
+  var query_series = Series.find({
+      slug: {$in: req.user.ptws}});
+    
+  var promise_series = query_series.exec();
+    
+  promise_series.then(function (series) {
+    res.render( 'user_ptws', {
+      title : 'Plan to Watch SOON List',
+      series: series,
+      user  : req.user
+    });
+  });
+};
+    
+exports.ptws_add = function( req, res, next ){
+  if (typeof req.user == 'undefined') res.redirect('/login');
+
+  var query_series = Series.findOne({slug : req.body.slug});
+  var promise_series = query_series.exec();
+    
+  promise_series.then(function (series) {
+    
+    var new_ptws_count = 1;
+    if (series.ptws_count) new_ptws_count = series.ptws_count + 1;
+      
+    Series.update({
+        slug : req.body.slug
+    }, {
+        $set: { 
+            ptws_count: new_ptws_count
+        }
+    }, function (err, updated_series) {
+      if( err ) return next( err );
+    
+      User.update({
+          name : req.user.name
+      }, { 
+          $push: {ptws: req.body.slug}
+      }, function (err, updated_user) {
+        if( err ) return next( err );
+        
+        req.user.ptws.push(req.body.slug);
+            
+        if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect );
+        else res.redirect( '/user/ptws' );
+      });
+    });
+  });
+};
+    
+exports.ptws_remove = function( req, res, next ){
+  if (typeof req.user == 'undefined') res.redirect('/login');
+
+  var query_series = Series.findOne({slug : req.params.slug});
+  var promise_series = query_series.exec();
+    
+  promise_series.then(function (series) {
+    
+    var new_ptws_count = 0;
+    if (series.ptws_count && series.ptws_count > 0) new_ptws_count = series.ptws_count - 1;
+      
+    Series.update({
+        slug : req.params.slug
+    }, {
+        $set: { 
+            ptws_count: new_ptws_count
+        }
+    }, function (err, updated_series) {
+      if( err ) return next( err );
+      
+      User.update({
+          name : req.user.name
+      }, { 
+          $pull: {ptws: req.params.slug}
+      }, function (err, updated_user) {
+        if( err ) return next( err );
+        
+        var series_index = req.user.ptws.indexOf(req.params.slug);
+        req.user.ptws.splice(series_index, 1);
+            
+        if (typeof req.session.login_redirect != 'undefined') res.redirect( req.session.login_redirect  );
+        else res.redirect( '/user/ptws' );
+      });
+    });
+  });
+};

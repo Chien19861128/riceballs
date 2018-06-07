@@ -1,0 +1,61 @@
+extends layout
+
+block content
+
+  script(src="/public/jquery-validation/dist/jquery.validate.min.js")
+  script(src="/public/easy-autocomplete/jquery.easy-autocomplete.min.js")
+  script.
+    $(document).ready(function () {
+      
+      var options = {
+        url: function(phrase) {
+          return "/elasticsearch?phrase=" + phrase;
+        },
+        getValue: function(item) {
+          return item._source.title + " (" +item._source.vintage + ")";
+        },
+        template: {
+          type: "custom",
+          method: function(value, item) {
+            return "<img src='/images/cover/" + item._source.slug + ".jpg' height='70' alt=' '/> " + item._source.title + " (" +item._source.vintage + ") [" + item._source.episode_count + " eps][" + item._source.type + "]";
+          }
+        },
+        list: {
+          onSelectItemEvent: function() {
+            var slug = $("#title").getSelectedItemData()._source.slug;
+
+            $("#slug").val(slug).trigger("change");
+          }
+        },
+      };
+      $("#title").easyAutocomplete(options);
+      $(".easy-autocomplete").removeAttr("style");
+    });
+    
+    $("#new_ptws").validate();
+    
+  div.row
+    div.col-lg-12
+      if user.ptws.length < 3
+        form(id="new_ptws" action='/user/ptws/add', method='POST')
+          div.col-lg-12
+            input.form-control.col-lg-8.d-inline.mb-sm-2(id="title" name="title" type="text" placeholder="Type and pick Series" aria-label="Series Title" required)
+            button.btn.btn-outline-success.d-inline.mb-2(type="submit") Add
+            input.form-control.mb-2(id="slug" name="slug" type="hidden" required)
+    
+    div.col-lg-12
+      p.text-info.ml-3= "Note: You can only have 3 max in your list"
+  if series.length > 0
+    each series_val, i in series
+      hr
+      div.row
+        div.col-lg-10.col-md-7
+          div.d-inline.mr-1
+            img(src="/images/cover/" + series_val.slug + ".jpg" alt="")
+          div.d-inline.mr-1= series_val.title
+        div.col-lg-2.col-md-5
+          form.d-inline(action='/user/ptws/remove/' + series_val.slug method='POST')
+            button.btn.btn-outline-primary.mb-1.mb-lg-0(type="submit") Remove
+          
+  footer.footer.mt-3
+    p 

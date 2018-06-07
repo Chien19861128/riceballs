@@ -103,6 +103,25 @@ exports.index = function ( req, res, next ){
   });
 };
 
+exports.ptws = function( req, res, next ){
+    
+  var query_series = Series.find({
+      ptws_count: {$gt: 0}
+  }).
+  sort( '-ptws_count' ).
+  limit(6);
+    
+  var promise_series = query_series.exec();
+    
+  promise_series.then(function (series) {
+    res.render( 'ptws', {
+      title : 'Top Plan to Watch SOON Series',
+      series: series,
+      user  : req.user
+    });
+  });
+};
+
 // ** express turns the cookie key to lowercase **
 exports.current_user = function ( req, res, next ){
   var user_id = req.cookies ?
