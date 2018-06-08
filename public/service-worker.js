@@ -1,14 +1,14 @@
 function showNotification(event) {
   return new Promise(resolve => {
     console.log(event.data);
-    const { body, title, tag, url } = JSON.parse(event.data.text());
+    const { body, title, tag, data } = JSON.parse(event.data.text());
     self.registration
       .getNotifications({ tag })
       //.then(existingNotifications => { })
       .then(() => {
         const icon = `/images/favicon.ico`;
         return self.registration
-          .showNotification(title, { body, tag, icon })
+          .showNotification(title, { body, tag, icon, data })
     })
     .then(resolve)
   })
@@ -21,7 +21,7 @@ self.addEventListener("push", event => {
 self.addEventListener("notificationclick", event => {
   event.notification.close();
   
-  const url = event.data.url;
+  const url = event.notification.data.url;
 
   if(url) {
     event.waitUntil(clients.openWindow(url));

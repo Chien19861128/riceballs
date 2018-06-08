@@ -355,6 +355,8 @@ cron.schedule('*/20 * * * *', function(){
 
   promise_reddit_posts.then(function (reddit_posts_val) {
     for (i=0; i<reddit_posts_val.length; i++) {
+        
+        
       if (reddit_posts_val[i].group) {
         var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
       
@@ -362,7 +364,9 @@ cron.schedule('*/20 * * * *', function(){
           body: reddit_posts_val[i].title,
           title: "New post is live!",
           tag: 'episode_live_notice' + Date.now(),
-          url: reddit_posts_val[i].url
+          data: {
+            url: reddit_posts_val[i].url
+          }
         };    
         
         var all_users = reddit_posts_val[i].group.admins.concat(reddit_posts_val[i].group.attending_users);
