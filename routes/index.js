@@ -104,6 +104,8 @@ exports.index = function ( req, res, next ){
 
 exports.ptws = function( req, res, next ){
     
+  req.session.login_redirect = req.originalUrl;
+    
   var query_series = Series.find({
       ptws_count: {$gt: 0}
   }).

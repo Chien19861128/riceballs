@@ -9,11 +9,22 @@ block content
       if i > 0
         hr
       div.row
-        div.col-12
+        div.col-lg-10.col-md-7
           div.font-weight-bold.d-inline.text-info.mr-1= (parseInt(i) + 1)
           div.d-inline.mr-1
             img(src="/images/cover/" + series_val.slug + ".jpg" alt="")
           div.d-inline.mr-1= series_val.title
+        div.col-lg-2.col-md-5
+          if typeof user != 'undefined'
+            if typeof user.ptws != 'undefined' && user.ptws.indexOf(series_val.slug) > -1
+              form.d-inline(action='/user/ptws/remove/' + series_val.slug method='POST')
+                button.btn.btn-outline-primary.mb-1.mb-lg-0(type="submit") Remove
+            else if user.ptws.length < 3
+              form(id="new_ptws" action='/user/ptws/add', method='POST')
+                button.btn.btn-outline-success.d-inline.mb-2(type="submit") Add
+                input.form-control.mb-2(id="slug" name="slug" value=series_val.slug type="hidden" required)
+            else
+              p.font-italic.d-inline.mb-1.mb-lg-0(style="font-size: 12px;")="List full"
           
   footer.footer.mt-3
     p 
