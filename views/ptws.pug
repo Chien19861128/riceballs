@@ -18,13 +18,13 @@ block content
           if typeof user != 'undefined'
             if typeof user.ptws != 'undefined' && user.ptws.indexOf(series_val.slug) > -1
               form.d-inline(action='/user/ptws/remove/' + series_val.slug method='POST')
-                button.btn.btn-outline-primary.mb-1.mb-lg-0.ml-1.ml-md-0(type="submit") Remove
+                button.btn.btn-outline-primary.mb-1.mb-lg-0.ml-3.ml-md-0(type="submit") Remove
             else if user.ptws.length < 3
               form(id="new_ptws" action='/user/ptws/add', method='POST')
-                button.btn.btn-outline-success.d-inline.mb-1.mb-lg-0.ml-1.ml-md-0(type="submit") Add
+                button.btn.btn-outline-success.d-inline.mb-1.mb-lg-0.ml-3.ml-md-0(type="submit") Add
                 input.form-control.mb-2(id="slug" name="slug" value=series_val.slug type="hidden" required)
             else
-              p.font-italic.d-inline.mb-1.mb-lg-0.ml-1.ml-md-0(style="font-size: 12px;")="List full"
+              p.font-italic.d-inline.mb-3.mb-lg-0.ml-1.ml-md-0(style="font-size: 12px;")="List full"
           
   footer.footer.mt-3
     p 
