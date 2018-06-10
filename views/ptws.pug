@@ -3,7 +3,8 @@ extends layout
 block content
 
   div.col-lg-12
-    p.text-info= "Series people are planning to watch SOON."
+    h5.font-weight-bold= "Top Plan to Watch Soon Series"
+    p.text-info= "* Series people are actually planning to watch."
   if series.length > 0
     each series_val, i in series
       if i > 0

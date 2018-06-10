@@ -36,6 +36,7 @@ block content
     
   div.row
     div.col-lg-12
+      h5.font-weight-bold= "My Plan to Watch Soon Series"
       if user.ptws.length < 3
         form(id="new_ptws" action='/user/ptws/add', method='POST')
           div.col-lg-12
@@ -44,7 +45,7 @@ block content
             input.form-control.mb-2(id="slug" name="slug" type="hidden" required)
     
     div.col-lg-12
-      p.text-info.ml-3= "Note: You can only have 3 max in your list"
+      p.text-info.ml-3= "* You can only have 3 max in your list"
   if series.length > 0
     each series_val, i in series
       hr
