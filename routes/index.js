@@ -84,7 +84,7 @@ exports.index = function ( req, res, next ){
           recent_groups: groups,
           user         : req.user,
           post_page    : post_page,
-          req          : req.query.filter,
+          filter       : req.query.filter,
           thread_counts: thread_counts
         });
       });
