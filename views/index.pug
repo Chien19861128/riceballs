@@ -43,13 +43,13 @@ block content
               div.col-lg-3.col-md-5
                 if typeof user != 'undefined' && post_val.reddit_name == user.name
                   if post_val.group_slug
-                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All threads/Edit"
+                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts/Edit"
                   else
                     p.font-italic.d-inline.mr-1.mb-1.mb-lg-0(style="font-size: 12px;")="Not grouped"
                     a.btn.btn-outline-success(href='/reddit_post/' + post_val.id)= "Assign"
                 else
                   if post_val.group_slug
-                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All threads"
+                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts"
                     if typeof user != 'undefined' && post_val.group.attending_users.indexOf(user.name) > -1
                       form.d-inline(action='/groups/leave/' + post_val.group_slug method='POST')
                         button.btn.btn-outline-success.mb-1.mb-lg-0(type="submit") Unfollow
@@ -117,7 +117,7 @@ block content
                     if typeof recent_val.start_time != 'undefined'
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
                     p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/followers:' + recent_val.attending_users_count
-                    p.mb-1(style="font-size: 6px;")=thread_counts[recent_val.slug] + " threads"
+                    p.mb-1(style="font-size: 6px;")=thread_counts[recent_val.slug] + " posts"
                     a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'Details >>'
   footer.footer
     p 
