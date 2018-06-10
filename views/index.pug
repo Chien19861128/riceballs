@@ -31,7 +31,7 @@ block content
         div.row
           if reddit_posts.length > 0
             each post_val, i in reddit_posts
-              div.col-lg-10.col-md-8.col-7
+              div.col-lg-9.col-md-8
                 if parseInt(post_val.score) > 99
                   div.font-weight-bold.d-inline.text-danger.mr-1= post_val.score
                 else if parseInt(post_val.score) > 9
@@ -40,7 +40,7 @@ block content
                   div.font-weight-bold.d-inline.text-info.mr-1= post_val.score
                 a(href=post_val.url)= post_val.title
                 p.font-italic.ml-2.mb-lg-1.mb-0(style="font-size: 7px;")=post_val.reddit_name + ' - ' +  monthNames[post_val.create_time.getUTCMonth()] + ' ' + post_val.create_time.getUTCDate() + ' ' + post_val.create_time.getUTCFullYear()
-              div.col-lg-2.col-md-4.col-5
+              div.col-lg-3.col-md-4
                 if typeof user != 'undefined' && post_val.reddit_name == user.name
                   if post_val.group_slug
                     a.btn.btn-sm.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts/Edit"
