@@ -122,6 +122,7 @@ app.use(passport.session());
 app.use(routes.current_user);
 app.get('/',                        routes.index);
 app.get('/ptws',                    routes.ptws);
+app.get('/about',                   routes.about);
 
 app.get('/elasticsearch',           elasticsearch.index);
 

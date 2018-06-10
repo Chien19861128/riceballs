@@ -117,7 +117,8 @@ block content
                     if typeof recent_val.start_time != 'undefined'
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
                     p.mb-1(style="font-size: 6px;")='host(s):' + recent_val.admins + '/followers:' + recent_val.attending_users_count
-                    a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'Threads'
+                    p.mb-1(style="font-size: 6px;")=thread_counts[recent_val.slug] + " threads"
+                    a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'Details >>'
   footer.footer
     p 
   script(src="/javascripts/webpush.js")

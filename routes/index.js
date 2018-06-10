@@ -31,21 +31,8 @@ function initialize(url) {
 }
 
 exports.index = function ( req, res, next ){
-  req.session.login_redirect = req.originalUrl;
-   
-  /*    
-  var initializePromise = initialize('https://api.github.com/users/narenaryan');
-    initializePromise.then(function(result) {
-        userDetails = result;
-        console.log("Initialized user details");
-        // Use user details from here
-        console.log(userDetails)
-    }, function(err) {
-        console.log(err);
-    });*/
     
-  //var allPromise = Promise.all([ initialize('https://api.github.com/users/narenaryan'), initialize('https://api.github.com/users/chien19861128') ]);
-  //allPromise.then(console.log, console.error);
+  req.session.login_redirect = req.originalUrl;
   var reddit_post_fields = {};
   var group_fields = {
         is_active: true,
@@ -53,8 +40,6 @@ exports.index = function ( req, res, next ){
     };
     
   if (typeof req.query.filter != 'undefined' && req.query.filter == 'following') {
-      
-    console.log('[req.query.filter]' + req.query.filter);
     if (typeof req.user == 'undefined') res.redirect('/login');
  
     var in_groups = req.user.admin_groups.concat(req.user.joined_groups);
@@ -84,23 +69,37 @@ exports.index = function ( req, res, next ){
     sort( '-update_time -attending_users_count' ).
     limit(6);
     
-  //assert.ok(!(query instanceof Promise));
   var promise_reddit_posts = query_reddit_posts.exec();
   var promise_groups = query_groups.exec();
 
   promise_reddit_posts.then(function (reddit_posts) {
-      
     promise_groups.then(function (groups) {
-      res.render( 'index', {
-        title        : 'Home',
-        reddit_posts : reddit_posts,
-        recent_groups: groups,
-        user         : req.user,
-        post_page    : post_page,
-        req          : req.query.filter
+        
+      var thread_counts = {};
+        
+      count_thread(groups, 0, thread_counts).then((result) => {
+        res.render( 'index', {
+          title        : 'Home',
+          reddit_posts : reddit_posts,
+          recent_groups: groups,
+          user         : req.user,
+          post_page    : post_page,
+          req          : req.query.filter,
+          thread_counts: thread_counts
+        });
       });
     });
   });
+    
+  async function count_thread(groups, i, thread_counts) {
+    if (groups.length > 0) {
+      query_reddit_posts = Reddit_Post.count({group_slug: groups[i].slug});
+      thread_counts[groups[i].slug] = await query_reddit_posts.exec();
+      i++;
+      
+      if (i < groups.length) await count_thread(groups, i, thread_counts);
+    }
+  }
 };
 
 exports.ptws = function( req, res, next ){
@@ -132,4 +131,11 @@ exports.current_user = function ( req, res, next ){
   }
 
   next();
+};
+
+exports.about = function( req, res, next ){
+  res.render( 'about', {
+    title : 'About this Site',
+    user  : req.user
+  });
 };

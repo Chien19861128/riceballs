@@ -1,16 +1,18 @@
 extends layout
 
 block content
-
   div.col-lg-12
-    div.row
+    div.row.ml-1
       if typeof user != 'undefined'
         a.btn-lg.btn-success(href="/logout", title="", target="_blank") Logout
       else
         a.btn-lg.btn-success(href="/auth/reddit", title="", target="") Login with Reddit
-  
   .row
     p 
+  div.col-lg-12
+    p #[a(href="https://reddit.com") Reddit] handles the login process, this site won't have access to your password.
+    p What is this site? #[a(href="/about") See About]
+  
     
   footer.footer
     p 

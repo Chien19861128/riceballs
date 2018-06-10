@@ -37,10 +37,10 @@ html(lang="en")
           ul.nav.nav-pills.float-right
             li.nav-item
               a.nav-link(href="/ptws") Top PTW Soon
+            li.nav-item
+              a.nav-link.active(href="/user/ptws") My PTW Soon
+                span.sr-only= (current)
             if typeof user != 'undefined'
-              li.nav-item
-                a.nav-link.active(href="/user/ptws") My PTW Soon
-                  span.sr-only= (current)
               li.nav-item
                 a.nav-link.pl-2.pr-1(href="/logout") Logout
             else
@@ -49,7 +49,8 @@ html(lang="en")
       
       block content
       
-      button.btn.btn-sm.float-right(onclick="topFunction()" id="myBtn" title="Go to top") Top
+      button.btn.btn.float-right(onclick="topFunction()" id="myBtn" title="Go to top") Top
+      a.btn.btn.float-right(href="/about") About
       
     if typeof user != 'undefined'
       script.
