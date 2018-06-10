@@ -31,7 +31,7 @@ block content
         div.row
           if reddit_posts.length > 0
             each post_val, i in reddit_posts
-              div.col-lg-9.col-md-7
+              div.col-lg-10.col-md-8.col-7
                 if parseInt(post_val.score) > 99
                   div.font-weight-bold.d-inline.text-danger.mr-1= post_val.score
                 else if parseInt(post_val.score) > 9
@@ -40,22 +40,22 @@ block content
                   div.font-weight-bold.d-inline.text-info.mr-1= post_val.score
                 a(href=post_val.url)= post_val.title
                 p.font-italic.ml-2.mb-lg-1.mb-0(style="font-size: 7px;")=post_val.reddit_name + ' - ' +  monthNames[post_val.create_time.getUTCMonth()] + ' ' + post_val.create_time.getUTCDate() + ' ' + post_val.create_time.getUTCFullYear()
-              div.col-lg-3.col-md-5
+              div.col-lg-2.col-md-4.col-5
                 if typeof user != 'undefined' && post_val.reddit_name == user.name
                   if post_val.group_slug
-                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts/Edit"
+                    a.btn.btn-sm.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts/Edit"
                   else
                     p.font-italic.d-inline.mr-1.mb-1.mb-lg-0(style="font-size: 12px;")="Not grouped"
-                    a.btn.btn-outline-success(href='/reddit_post/' + post_val.id)= "Assign"
+                    a.btn.btn-sm.btn-outline-success(href='/reddit_post/' + post_val.id)= "Assign"
                 else
                   if post_val.group_slug
-                    a.btn.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts"
+                    a.btn.btn-sm.btn-outline-primary.mr-1.mb-1.mb-lg-0(href='/groups/' + post_val.group_slug)= "All posts"
                     if typeof user != 'undefined' && post_val.group.attending_users.indexOf(user.name) > -1
                       form.d-inline(action='/groups/leave/' + post_val.group_slug method='POST')
-                        button.btn.btn-outline-success.mb-1.mb-lg-0(type="submit") Unfollow
+                        button.btn.btn-sm.btn-outline-success.mb-1.mb-lg-0(type="submit") Unfollow
                     else
                       form.d-inline(action='/groups/join/' + post_val.group_slug method='POST')
-                        button.btn.btn-success.mb-1.mb-lg-0(type="submit") Follow
+                        button.btn.btn-sm.btn-success.mb-1.mb-lg-0(type="submit") Follow
                   else
                     p.font-italic.d-inline.mr-1.mb-1.mb-lg-0(style="font-size: 12px;")="Not grouped"
             ul.pagination
