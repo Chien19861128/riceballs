@@ -49,9 +49,9 @@ block content
           p(style="font-size: 8px;")='host(s):' + group.admins + '/followers:' + group.attending_users_count
           if group.attending_users_count < 5 && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
             p(style="font-size: 8px;")= "Need at least 3 followers to receive notifications and show in front page."
-          if group.is_active == false
+          //if group.is_active == false
             p(style="font-size: 8px;")= "status: Gouging interest."
-          else
+          //else
             p(style="font-size: 8px;")= "status: It's happening!"
           if discussion_hour
             p= "Discussion Time " + discussion_hour + ":00 GMT"
