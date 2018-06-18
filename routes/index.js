@@ -110,7 +110,7 @@ exports.ptws = function( req, res, next ){
       ptws_count: {$gt: 0}
   }).
   sort( '-ptws_count' ).
-  limit(6);
+  limit(25);
     
   var promise_series = query_series.exec();
     
