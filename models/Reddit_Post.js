@@ -15,6 +15,7 @@ var Reddit_Post = new Schema({
     comments_over_time: [],
     score_over_time: [],
     is_notified  : Boolean,
+    is_private_messaged: Boolean,
     is_discuss_thread: Boolean,
     create_time  : Date,
     update_time  : Date

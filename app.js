@@ -44,11 +44,27 @@ passport.use(new RedditStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      User.findOrCreate({ name: profile.name, reddit_id: profile.id, reddit_name: profile.name }, function (err, user) {
+      User.findOrCreate({ name: profile.name, reddit_name: profile.name }, function (err, user) {
         var reddit_karma = profile.link_karma + profile.comment_karma;
         var reddit_create_time = profile._json.created;
       
-        User.findOneAndUpdate ({_id: user._id}, { $set: { reddit_karma: reddit_karma, reddit_create_time: reddit_create_time, update_time : Date.now() }}, { new: true }, function (err, updated_user) {
+        var new_is_allow_private_message;
+        if (user.is_allow_private_message == false) new_is_allow_private_message = false;
+        else new_is_allow_private_message = true;
+          
+        User.findOneAndUpdate (
+            {_id: user._id}, 
+            { 
+                $set: { 
+                    reddit_id: profile.id, 
+                    reddit_karma: reddit_karma, 
+                    reddit_create_time: reddit_create_time, 
+                    is_allow_private_message: new_is_allow_private_message, 
+                    update_time : Date.now() 
+                }
+            }, 
+            { new: true }, 
+            function (err, updated_user) {
           return done(err, updated_user);
         });
       });
@@ -140,6 +156,8 @@ app.get('/groups/:slug',            groups.detail);
 
 app.get('/user/me',                 user.me);
 app.get('/user/ptws',               user.ptws);
+app.get('/user/settings',           user.settings);
+app.post('/user/is_allow_private_message', user.is_allow_private_message);
 app.post('/user/ptws/add',          user.ptws_add);
 app.post('/user/ptws/remove/:slug', user.ptws_remove);
 
@@ -343,7 +361,7 @@ cron.schedule('30 * * * *', function(){
 });
 */
 
-cron.schedule('*/20 * * * *', function(){
+cron.schedule('*/5 * * * *', function(){
   console.log('cronjob new post reminder');
     
   var query_reddit_posts = Reddit_Post.

@@ -42,7 +42,8 @@ html(lang="en")
                 span.sr-only= (current)
             if typeof user != 'undefined'
               li.nav-item
-                a.nav-link.pl-2.pr-1(href="/logout") Logout
+                //a.nav-link.pl-2.pr-1(href="/logout") Logout
+                a.nav-link.pl-2.pr-1(href="/user/settings") Settings
             else
               li.nav-item
                 a.nav-link(href="/login") Login 

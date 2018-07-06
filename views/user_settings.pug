@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  
+  a.btn.btn-outline-primary.ml-2.mb-3(href="/logout") Logout
+  
+  div.enable-push.ml-2.mb-2
+    div.toggle-switch
+      input.js-push-toggle-checkbox(id="enable-push-checkbox" type="checkbox" disabled)
+      label(for="enable-push-checkbox")
+    div.message="Notifications(N/Y)"
+  
+  div.enable-push.ml-2.mb-2
+    div.toggle-switch
+      if user.is_allow_private_message == true
+        input.js-pm-toggle-checkbox(id="enable-pm-checkbox" type="checkbox" checked)
+      else
+        input.js-pm-toggle-checkbox(id="enable-pm-checkbox" type="checkbox")
+      label(for="enable-pm-checkbox")
+    div.message="Private Messages(N/Y)"
+    
+  footer.footer
+    p 
+  script(src="/javascripts/webpush.js")
+  script(src="/javascripts/pm.js")

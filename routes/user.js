@@ -98,7 +98,44 @@ exports.me = function( req, res, next ){
     });
   });
 };
+   
+exports.settings = function( req, res, next ){
+  req.session.login_redirect = req.originalUrl;
+  if (typeof req.user == 'undefined') res.redirect('/login');
     
+  res.render( 'user_settings', {
+    title: 'Settings',
+    user : req.user
+  });
+}
+   
+exports.is_allow_private_message = function( req, res, next ){
+  req.session.login_redirect = req.originalUrl;
+  if (typeof req.user == 'undefined') res.redirect('/login');
+    
+    console.log(req.body);
+    
+  User.update({
+      name : req.user.name
+  }, { 
+      $set: {is_allow_private_message: req.body.is_allow_private_message}
+  }, function (err, updated_user) {
+    if( err ) {
+      res.status(500);
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({
+        error: {
+          id: 'unable-to-update-is-allow-private-message',
+          message: 'The update was received but we were unable to save it to our database.'
+        }
+      }));
+    } else {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ data: { success: true } }));
+    }
+  });
+}
+
 exports.ptws = function( req, res, next ){
   req.session.login_redirect = req.originalUrl;
   if (typeof req.user == 'undefined') res.redirect('/login');

@@ -15,6 +15,7 @@ var User = new Schema({
     joined_groups: [],
     ptws         : [],
     push_subscription: String,
+    is_allow_private_message: Boolean
 });
 
 User.plugin(findOrCreate);
