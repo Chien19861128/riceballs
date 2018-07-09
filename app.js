@@ -427,6 +427,8 @@ cron.schedule('*/5 * * * *', function(){
           is_notified: true,
           update_time : Date.now() 
       }
+  }, {
+      multi: true
   }, function (err, updated_reddit_post) {
     if( err ) return next( err );
   });
