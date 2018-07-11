@@ -1,5 +1,6 @@
 var utils    = require( '../utils' );
 var mongoose = require( 'mongoose' );
+var User     = mongoose.model( 'User' );
 var Series   = mongoose.model( 'Series' );
 var Episode  = mongoose.model( 'Episode' );
 var Group    = mongoose.model( 'Group' );
@@ -42,54 +43,68 @@ exports.index = function ( req, res, next ){
   if (typeof req.query.filter != 'undefined' && req.query.filter == 'following') {
     if (typeof req.user == 'undefined') res.redirect('/login');
  
-    var in_groups = req.user.admin_groups.concat(req.user.joined_groups);
+    var query_user = User.
+      findOne({name: req.user.name});
+    
+    var promise_user = query_user.exec();
       
-    reddit_post_fields.group_slug = {$in: in_groups};
-    group_fields.slug = {$in: in_groups};
+    promise_user.then(function (user) {
+      var in_groups = user.admin_groups.concat(user.joined_groups);
+      reddit_post_fields.group_slug = {$in: in_groups};
+      group_fields.slug = {$in: in_groups};
+        
+      find_following(reddit_post_fields, group_fields);
+    });
+  } else {
+    find_following(reddit_post_fields, group_fields);
   }
   
-  var post_page = 1;
-  var post_skip = 0;
-  var post_limit = 10;
+  function find_following(reddit_post_fields, group_fields) {
+    
+    var post_page = 1;
+    var post_skip = 0;
+    var post_limit = 10;
   
-  if (typeof req.query.post_page != 'undefined') {
-      post_page = req.query.post_page;
-      post_skip = (post_page - 1) * 10;
-  }
+    if (typeof req.query.post_page != 'undefined') {
+        post_page = req.query.post_page;
+        post_skip = (post_page - 1) * 10;
+    }
     
-  var query_reddit_posts = Reddit_Post.
-    find(reddit_post_fields).
-    populate('group').
-    sort( '-create_time' ).
-    skip(post_skip).
-    limit(10);
+    var query_reddit_posts = Reddit_Post.
+      find(reddit_post_fields).
+      populate('group').
+      sort( '-create_time' ).
+      skip(post_skip).
+      limit(10);
     
-  var query_groups = Group.
-    find(group_fields).
-    sort( '-update_time -attending_users_count' ).
-    limit(6);
+    var query_groups = Group.
+      find(group_fields).
+      sort( '-update_time -attending_users_count' ).
+      limit(6);
     
-  var promise_reddit_posts = query_reddit_posts.exec();
-  var promise_groups = query_groups.exec();
+    var promise_reddit_posts = query_reddit_posts.exec();
+    var promise_groups = query_groups.exec();
 
-  promise_reddit_posts.then(function (reddit_posts) {
-    promise_groups.then(function (groups) {
+    promise_reddit_posts.then(function (reddit_posts) {
+      promise_groups.then(function (groups) {
         
-      var thread_counts = {};
+        var thread_counts = {};
         
-      count_thread(groups, 0, thread_counts).then((result) => {
-        res.render( 'index', {
-          title        : 'Home',
-          reddit_posts : reddit_posts,
-          recent_groups: groups,
-          user         : req.user,
-          post_page    : post_page,
-          filter       : req.query.filter,
-          thread_counts: thread_counts
+        count_thread(groups, 0, thread_counts).then((result) => {
+            
+          res.render( 'index', {
+            title        : 'Home',
+            reddit_posts : reddit_posts,
+            recent_groups: groups,
+            user         : req.user,
+            post_page    : post_page,
+            filter       : req.query.filter,
+            thread_counts: thread_counts
+          });
         });
       });
     });
-  });
+  }
     
   async function count_thread(groups, i, thread_counts) {
     if (groups.length > 0) {
