@@ -3,10 +3,11 @@ extends layout
 block content
   div.col-lg-12
     h4.font-weight-bold= "What is this site?"
-    p The goal of the site is to help make creating and following rewatches on #[a(href='https://reddit.com/r/anime')= '/r/anime'] easier. Currently, it has 3 main features:
+    p The goal of the site is to help make creating and following rewatches on #[a(href='https://reddit.com/r/anime')= '/r/anime'] easier. Currently, it has 4 main features:
     p 1. Tracks rewatch related posts on #[a(href='https://reddit.com/r/anime')= '/r/anime'], and links back to the post on #[a(href='https://reddit.com/r/anime')= '/r/anime'].
-    p 2. Posts with titles following a certain pattern will be grouped together, allowing people to follow a group and receive notifications as soon as a new post of the group is live.
+    p 2. Posts with titles following a certain pattern will be grouped together, allowing people to follow a group and receive notifications or private messages as soon as a new post of the group is live.
     p 3. PTW Soon List, or Plan to Watch Soon List, users pick only 3 series to add to their lists. Intended to help gauge which series the community might want to rewatch soon.
+    p 4. No login feature, allows users to follow groups by commenting [Follow] on #[a(href='https://reddit.com/r/anime')= '/r/anime'] rewatch threads.
     
     h4.font-weight-bold= "How does it work?"
     p 1-1. Links of posts on #[a(href='https://reddit.com/r/anime')= '/r/anime'] with "rewatch"(caps don't matter) in the title are automatically collected here and listed from newest to the oldest.
@@ -20,8 +21,11 @@ block content
     p 2-2. Posts with the same {title} and same poster would be considered the same group. Allowing users to follow it by clicking Follow on the front page or in each of the group pages.
     p 2-3. Users can also switch on the Notifications on the front page or the group pages to receive notifications when a new post of a followed group is posted, if your browser supports it.
     p 2-4. Notifications link directly to the posts.
+    p 2-5. There are two kinds of notifications, web notifications and private messages. By default web notifications are off and private messages on. Users can change this in #[a(href='/user/settings')= 'Settings'].
     p 3-1. The series data and cover images for you to pick comes from #[a(href='https://www.animenewsnetwork.com/')= 'animenewsnetwork'].
     p 3-2. Update with #[a(href='https://www.animenewsnetwork.com/')= 'animenewsnetwork'] isn't very frequent, so current and future titles may be missing. Though it shouldn't matter because this is intended for rewatches.
+    p 4-1. Within 24 hours of posts that are grouped, users of tier 1 comments(*) containing [Follow] would be added to the followers of the group. *A comment to the thread, not to another comment.
+    p 4-2. Users can unfollow by replying [Unfollow] to the private message reminder, or on this site.
     h4.font-weight-bold= "Contact"
     p #[a(href='https://www.reddit.com/user/Dystopian_Overlord/') /u/Dystopian_Overlord] on reddit
   
