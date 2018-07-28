@@ -17,6 +17,7 @@ var Reddit_Post = new Schema({
     is_notified  : Boolean,
     is_private_messaged: Boolean,
     is_discuss_thread: Boolean,
+    is_announcement: Boolean,
     create_time  : Date,
     update_time  : Date
 });
