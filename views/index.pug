@@ -114,7 +114,7 @@ block content
                     p.mb-1(style="font-size: 10px;")='followers:' + recent_val.attending_users.length
                     a.btn.btn-sm.btn-outline-primary.mr-1(href='/groups/' + recent_val.slug)= thread_counts[recent_val.slug] + ' Posts >>'
                     
-                    if typeof user != 'undefined' && post_val.group.attending_users.indexOf(user.name) > -1
+                    if typeof user != 'undefined' && recent_val.attending_users.indexOf(user.name) > -1
                       form.d-inline(action='/groups/leave/' + recent_val.slug method='POST')
                         button.btn.btn-sm.btn-outline-success.mb-1.mb-lg-0(type="submit") Unfollow
                     else
