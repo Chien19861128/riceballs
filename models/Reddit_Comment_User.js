@@ -5,6 +5,7 @@ var Schema   = mongoose.Schema;
 var Reddit_Comment_User = new Schema({
     reddit_post_id: String,
     reddit_name   : String,
+    score_total   : Number,
     comment_count : Number,
     first_comment_time: Date,
     last_comment_time: Date,

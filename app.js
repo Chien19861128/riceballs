@@ -390,31 +390,7 @@ cron.schedule('*/5 * * * *', function(){
         
         var all_users = reddit_posts_val[i].group.admins.concat(reddit_posts_val[i].group.attending_users);
         
-        var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
-        var promise_user = query_user.exec(); 
-        
-        promise_user.then(function (user_val) {
-          for (i=0; i<user_val.length; i++) {
-            var ps = JSON.parse(user_val[i].push_subscription);
-            
-            var pushSubscription = {
-              endpoint: ps.endpoint,
-              keys: {
-                auth: ps.keys.auth,
-                p256dh: ps.keys.p256dh
-              }
-            };
-            
-            webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
-              if (err.statusCode === 410) {
-                console.log('Push fail: ', err);
-                //return deleteSubscriptionFromDatabase(subscription._id);
-              } else {
-                console.log('Subscription is no longer valid: ', err);
-              }
-            });
-          }
-        });
+        send_webpush_reminder(payload, all_users);
       }
     }
   });
@@ -432,4 +408,33 @@ cron.schedule('*/5 * * * *', function(){
   }, function (err, updated_reddit_post) {
     if( err ) return next( err );
   });
+    
+  function send_webpush_reminder(payload, all_users) {
+      
+    var query_user = User.find({push_subscription : {$ne: null}, name : {$in: all_users}});
+    var promise_user = query_user.exec(); 
+      
+    promise_user.then(function (user_val) {
+      for (ii=0; ii<user_val.length; ii++) {
+        var ps = JSON.parse(user_val[ii].push_subscription);
+            
+        var pushSubscription = {
+          endpoint: ps.endpoint,
+          keys: {
+            auth: ps.keys.auth,
+            p256dh: ps.keys.p256dh
+          }
+        };
+            
+        webpush.sendNotification(pushSubscription, JSON.stringify(payload)).catch((err) => {
+          if (err.statusCode === 410) {
+            console.log('Push fail: ', err);
+            //return deleteSubscriptionFromDatabase(subscription._id);
+          } else {
+            console.log('Subscription is no longer valid: ', err);
+          }
+        });
+      }
+    });
+  }
 });
