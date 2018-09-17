@@ -103,22 +103,23 @@ block content
       div.container
         div.row
           each recent_val, i in recent_groups
-            div.col-lg-4.col-md-6.mb-2
-              div.card(style="height : 200px")
-                div.row
-                  if recent_val.series_slugs[0]
-                    div.col-lg-5.col-md-5.col-sm-4.col-5.card-img-top(style="height :200px;background: url(/images/cover/" + recent_val.series_slugs[0] + ".jpg) center no-repeat;background-size: cover;")
-                  else
-                    div.col-lg-5.col-md-5.col-sm-4.col-5.card-img-top(style="height :200px;background: url(/images/logo.png) center no-repeat;background-size: cover; background-size: 100px 100px;")
-                  div.col-lg-7.col-md-7.col-sm-8.col-7
-                    div.card-body
-                    h7.card-title= recent_val.name
+            div.col-lg-3.col-sm-6.mb-2
+              div.card(style="height : 175px")
+                  div.card-body
+                    h6.font-weight-bold.card-title= recent_val.name
                   
                     if typeof recent_val.start_time != 'undefined'
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
-                    p.mb-1(style="font-size: 9px;")='host(s):' + recent_val.admins + '/followers:' + recent_val.attending_users.length
-                    p.mb-1(style="font-size: 9px;")=thread_counts[recent_val.slug] + " posts"
-                    a.btn.btn-sm.btn-primary(href='/groups/' + recent_val.slug)= 'All Posts >>'
+                    p.mb-1(style="font-size: 10px;")='host(s):' + recent_val.admins
+                    p.mb-1(style="font-size: 10px;")='followers:' + recent_val.attending_users.length
+                    a.btn.btn-sm.btn-outline-primary.mr-1(href='/groups/' + recent_val.slug)= thread_counts[recent_val.slug] + ' Posts >>'
+                    
+                    if typeof user != 'undefined' && post_val.group.attending_users.indexOf(user.name) > -1
+                      form.d-inline(action='/groups/leave/' + recent_val.slug method='POST')
+                        button.btn.btn-sm.btn-outline-success.mb-1.mb-lg-0(type="submit") Unfollow
+                    else
+                      form.d-inline(action='/groups/join/' + recent_val.slug method='POST')
+                        button.btn.btn-sm.btn-success.mb-1.mb-lg-0(type="submit") Follow
   footer.footer
     p 
   script(src="/javascripts/webpush.js")

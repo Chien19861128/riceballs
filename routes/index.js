@@ -80,7 +80,7 @@ exports.index = function ( req, res, next ){
     var query_groups = Group.
       find(group_fields).
       sort( '-update_time -attending_users_count' ).
-      limit(6);
+      limit(8);
     
     var promise_reddit_posts = query_reddit_posts.exec();
     var promise_groups = query_groups.exec();
