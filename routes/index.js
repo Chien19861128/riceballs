@@ -1,9 +1,10 @@
-var utils    = require( '../utils' );
-var mongoose = require( 'mongoose' );
-var User     = mongoose.model( 'User' );
-var Series   = mongoose.model( 'Series' );
-var Episode  = mongoose.model( 'Episode' );
-var Group    = mongoose.model( 'Group' );
+var utils       = require( '../utils' );
+var mongoose    = require( 'mongoose' );
+var User        = mongoose.model( 'User' );
+var Series      = mongoose.model( 'Series' );
+var Episode     = mongoose.model( 'Episode' );
+var Group       = mongoose.model( 'Group' );
+var Group_Mvp   = mongoose.model( 'Group_Mvp' );
 var Reddit_Post = mongoose.model( 'Reddit_Post' );
 //var Promise  = require('bluebird');
 
@@ -34,10 +35,14 @@ function initialize(url) {
 exports.index = function ( req, res, next ){
     
   req.session.login_redirect = req.originalUrl;
+    
   var reddit_post_fields = {};
+    
+  var d1 = new Date();
+  d1.setDate(d1.getDate() - 2);
   var group_fields = {
         is_active: true,
-        series_slugs: { $ne: null }
+        update_time : {$gt: d1}
     };
     
   if (typeof req.query.filter != 'undefined' && req.query.filter == 'following') {
@@ -79,8 +84,7 @@ exports.index = function ( req, res, next ){
     
     var query_groups = Group.
       find(group_fields).
-      sort( '-update_time -attending_users_count' ).
-      limit(8);
+      sort( '-update_time -attending_users_count' );
     
     var promise_reddit_posts = query_reddit_posts.exec();
     var promise_groups = query_groups.exec();
@@ -89,8 +93,9 @@ exports.index = function ( req, res, next ){
       promise_groups.then(function (groups) {
         
         var thread_counts = {};
+        var mvps = {};
         
-        count_thread(groups, 0, thread_counts).then((result) => {
+        count_thread(groups, 0, thread_counts, mvps).then((result) => {
             
           res.render( 'index', {
             title        : 'Home',
@@ -99,20 +104,24 @@ exports.index = function ( req, res, next ){
             user         : req.user,
             post_page    : post_page,
             filter       : req.query.filter,
-            thread_counts: thread_counts
+            thread_counts: thread_counts,
+            mvps         : mvps
           });
         });
       });
     });
   }
     
-  async function count_thread(groups, i, thread_counts) {
+  async function count_thread(groups, i, thread_counts, mvps) {
     if (groups.length > 0) {
       query_reddit_posts = Reddit_Post.count({group_slug: groups[i].slug});
       thread_counts[groups[i].slug] = await query_reddit_posts.exec();
+        
+      query_group_mvp = Group_Mvp.findOne({group_slug: groups[i].slug}).sort( '-votes -score_total' );
+      mvps[groups[i].slug] = await query_group_mvp.exec();
       i++;
       
-      if (i < groups.length) await count_thread(groups, i, thread_counts);
+      if (i < groups.length) await count_thread(groups, i, thread_counts, mvps);
     }
   }
 };

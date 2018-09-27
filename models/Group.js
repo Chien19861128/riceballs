@@ -14,6 +14,7 @@ var Group = new Schema({
     tags        : [],
     attending_users: [],
     attending_users_count: Number,
+    post_count  : Number,
     min_users   : Number,
     number      : Number,
     is_active   : Boolean,

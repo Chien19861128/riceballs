@@ -99,12 +99,13 @@ block content
                 span.sr-only Next
     if recent_groups.length > 0
       div.col-lg-12.mb-sm-2
-        h5.font-weight-bold= "Recent Groups"
+        h5.d-inline.font-weight-bold= "Recent Groups "
+        h5.d-inline.font-weight-bold.text-info= "(" + recent_groups.length + ")"
       div.container
         div.row
           each recent_val, i in recent_groups
             div.col-lg-3.col-sm-6.mb-2
-              div.card.bg-secondary(style="height : 175px")
+              div.card.bg-secondary(style="height : 195px")
                   div.card-body
                     h6.font-weight-bold.card-title= recent_val.name
                   
@@ -112,6 +113,15 @@ block content
                       p.mb-1(style="font-size: 8px;").card-text= ' Starting ' + monthNames[recent_val.start_time.getMonth()] + ' ' + recent_val.start_time.getDate() + ' ' + recent_val.start_time.getFullYear() +' @' + recent_val.start_time.getHours() + ':00GMT'
                     p.mb-1(style="font-size: 10px;")='host(s):' + recent_val.admins
                     p.mb-1(style="font-size: 10px;")='followers:' + recent_val.attending_users.length
+                    p.mb-1
+                      span
+                        - var mvp;
+                        if mvps[recent_val.slug]
+                          - mvp = mvps[recent_val.slug].reddit_name;
+                        else
+                          - mvp = "none"
+                        a.font-weight-bold.text-warning(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")='MVP: ' + mvp
+                        a.font-weight-bold(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")=' >> Go Vote'
                     a.btn.btn-sm.btn-outline-primary.mr-1(href='/groups/' + recent_val.slug)= thread_counts[recent_val.slug] + ' Posts >>'
                     
                     if typeof user != 'undefined' && recent_val.attending_users.indexOf(user.name) > -1
