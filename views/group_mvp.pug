@@ -27,4 +27,7 @@ block content
                   td=group_mvp_val.score_total
                   td=group_mvp_val.attend_count + '/' + group.post_count
                   td
-                    a.text-primary(href="https://www.reddit.com" + group_mvp_val.best_comment_url style="font-size: 16px;")=group_mvp_val.best_comment
+                    - var comment_str = group_mvp_val.best_comment;
+                    if comment_str.length >= 280
+                      - comment_str = comment_str + "...";
+                    a.text-primary(href="https://www.reddit.com" + group_mvp_val.best_comment_url style="font-size: 16px;")=comment_str
