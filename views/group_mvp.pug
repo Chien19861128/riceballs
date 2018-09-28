@@ -15,7 +15,7 @@ block content
                 td="Votes"
                 td="Total Karma"
                 td="Attendancy"
-                td="Best Comment"
+                td="Best Comment(click goes to comment on reddit)"
             tbody
               each group_mvp_val, i in group_mvp
                 tr
@@ -26,4 +26,5 @@ block content
                       button.btn.btn-sm.btn-success.mb-1.mb-lg-0(type="submit") Vote!
                   td=group_mvp_val.score_total
                   td=group_mvp_val.attend_count + '/' + group.post_count
-                  td.text-primary(style="font-size: 16px;")=group_mvp_val.best_comment
+                  td
+                    a.text-primary(href=group_mvp_val.best_comment_url style="font-size: 16px;")=group_mvp_val.best_comment
