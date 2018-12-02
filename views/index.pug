@@ -115,13 +115,13 @@ block content
                     p.mb-1(style="font-size: 10px;")='followers:' + recent_val.attending_users.length
                     p.mb-1
                       span
-                        - var mvp;
-                        if mvps[recent_val.slug]
+                        //- var mvp;
+                        //if mvps[recent_val.slug]
                           - mvp = mvps[recent_val.slug].reddit_name;
-                        else
+                        //else
                           - mvp = "none"
-                        a.font-weight-bold.text-warning(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")='MVP: ' + mvp
-                        a.font-weight-bold(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")=' >> Go Vote'
+                        //a.font-weight-bold.text-warning(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")='MVP: ' + mvp
+                        a.font-weight-bold(href='/group_mvp/' + recent_val.slug style="font-size: 11px;")='Stats & Best Comments'
                     a.btn.btn-sm.btn-outline-primary.mr-1(href='/groups/' + recent_val.slug)= thread_counts[recent_val.slug] + ' Posts >>'
                     
                     if typeof user != 'undefined' && recent_val.attending_users.indexOf(user.name) > -1

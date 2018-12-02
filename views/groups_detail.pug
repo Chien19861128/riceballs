@@ -48,10 +48,8 @@ block content
             h4= group.name
           p.mb-1(style="font-size: 9px;")='host(s):' + group.admins + '/followers:' + group.attending_users_count
           p.mb-1
-            a.font-weight-bold.text-warning(href='/group_mvp/' + group.slug style="font-size: 12px;")='MVP: none'
-            a.font-weight-bold(href='/group_mvp/' + group.slug style="font-size: 11px;")=' >> Go Vote'
-          if group.attending_users_count < 5 && typeof user != 'undefined' && group.admins.indexOf(user.name) > -1
-            p(style="font-size: 8px;")= "Need at least 3 followers to receive notifications and show in front page."
+            //a.font-weight-bold.text-warning(href='/group_mvp/' + group.slug style="font-size: 12px;")='MVP: none'
+            a.font-weight-bold(href='/group_mvp/' + group.slug style="font-size: 11px;")='Stats & Best Comments'
           //if group.is_active == false
             p(style="font-size: 8px;")= "status: Gouging interest."
           //else

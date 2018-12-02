@@ -5,29 +5,12 @@ block content
   div.container
     div.row
       if group_mvp.length > 0
-        h5.mt-2 Decide who's the best poster!
-        div.table-responsive
-          table.table
-            thead.thead-dark
-              tr
-                td="User"
-                td=""
-                td="Votes"
-                td="Total Karma"
-                td="Attendancy"
-                td="Best Comment (click goes to comment on reddit)"
-            tbody
-              each group_mvp_val, i in group_mvp
-                tr
-                  td=group_mvp_val.reddit_name
-                  td=group_mvp_val.votes.length
-                  td
-                    form.d-inline(action='/group_mvp/' + group_mvp_val.group_slug + '/vote/' + group_mvp_val.reddit_name method='POST')
-                      button.btn.btn-sm.btn-success.mb-1.mb-lg-0(type="submit") Vote!
-                  td=group_mvp_val.score_total
-                  td=group_mvp_val.attend_count
-                  td
-                    - var comment_str = group_mvp_val.best_comment;
-                    if comment_str && comment_str.length >= 280
-                      - comment_str = comment_str + "...";
-                    a.text-primary(href="https://www.reddit.com" + group_mvp_val.best_comment_url style="font-size: 16px;")=comment_str
+        div.col-12
+          h5.mt-2 Each User's Best Comments
+        each group_mvp_val, i in group_mvp
+          div.col-12="--"
+          div.col-4
+            p.font-weight-bold="/u/" + group_mvp_val.reddit_name
+            p="Total Karma:" + group_mvp_val.score_total + " Attendancy:" + group_mvp_val.attend_count
+            a.text-primary(href="https://www.reddit.com" + group_mvp_val.best_comment_url style="font-size: 16px;")="comment reddit link>>"
+          div.col-8!=group_mvp_val.best_comment
